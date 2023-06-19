@@ -44,7 +44,7 @@ jobs:
       #TERRAFORM COMMANDS
       - name: Terraform Initialization
         id: terraform-init
-        uses: CeridianCamelot/iac-reusable/actions/terraform_initialization@main
+        uses: vinayprakash893/azure-terraform-actions-reusable/actions@main
         with:
           working-directory:     ${{ steps.concatenate.outputs.terraformdirectory }}
         env:
