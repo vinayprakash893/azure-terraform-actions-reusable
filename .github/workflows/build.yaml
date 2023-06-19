@@ -34,7 +34,7 @@ jobs:
 
       - name: Terraform Directory Path
         id: concatenate
-        run: echo "terraformdirectory=${{ github.workspace }} / ${{ inputs.terraform_directory }}" >> $GITHUB_OUTPUT   
+        run: echo "terraformdirectory=${{ github.workspace }}/${{ inputs.terraform_directory }}" >> $GITHUB_OUTPUT   
       
       - name: Upload Artifacts
         uses: actions/upload-artifact@v2
@@ -47,7 +47,7 @@ jobs:
         id: terraform-init
         uses: vinayprakash893/azure-terraform-actions-reusable/actions@main
         with:
-          working-directory:     ${{ steps.concatenate.outputs.terraformdirectory }}
+          working-directory: ${{ steps.concatenate.outputs.terraformdirectory }}
         env:
           ARM_CLIENT_ID:       ${{ secrets.AZURE_CLIENT_ID  }}
           ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
