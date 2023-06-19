@@ -1,0 +1,112 @@
+name: terraform-build
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
+      terraform_directory:
+        required: true
+        type: string
+      artifact-name:
+        required: true
+        type: string
+    
+    secrets:
+      AZURE_CLIENT_ID :
+        required: true
+      AZURE_SUBSCRIPTION_ID:
+        required: true
+      AZURE_TENANT_ID:
+        required: true
+      token:
+        required: true
+
+            
+jobs:
+  terraform-validate:
+    runs-on: ubuntu-latest
+    #environment: ${{ inputs.environment }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Terraform Directory Path
+        id: concatenate
+        run: echo "terraformdirectory=${{ github.workspace }} / ${{ inputs.terraform_directory }}" >> $GITHUB_OUTPUT   
+      
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{ inputs.artifact-name }}
+          path: ${{ steps.concatenate.outputs.terraformdirectory }}
+          
+      #TERRAFORM COMMANDS
+      - name: Terraform Initialization
+        id: terraform-init
+        uses: vinayprakash893/azure-terraform-actions-reusable/actions@main
+        with:
+          working-directory:     ${{ steps.concatenate.outputs.terraformdirectory }}
+        env:
+          ARM_CLIENT_ID:       ${{ secrets.AZURE_CLIENT_ID  }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          ARM_TENANT_ID:       ${{ secrets.AZURE_TENANT_ID }}
+
+      - name: Terraform fmt
+        id: fmt
+        run: terraform fmt -check
+        continue-on-error: true
+      
+      - name: Validate Terraform code
+        id: validate
+        shell: bash
+        run: terraform validate 
+        working-directory: ${{ steps.concatenate.outputs.terraformdirectory }}
+      
+      # - uses: actions/github-script@v6
+      #   if: github.event_name == 'pull_request'
+      #   with:
+      #     github-token: ${{ secrets.GITHUB_TOKEN }}
+      #     script: |
+      #       // 1. Retrieve existing bot comments for the PR
+      #       const { data: comments } = await github.rest.issues.listComments({
+      #         owner: context.repo.owner,
+      #         repo: context.repo.repo,
+      #         issue_number: context.issue.number,
+      #       })
+      #       const botComment = comments.find(comment => {
+      #         return comment.user.type === 'Bot' && comment.body.includes('Terraform Format and Style')
+      #       })
+
+      #       // 2. Prepare format of the comment
+      #       const output = `#### Terraform Format and Style 🖌\`${{ steps.fmt.outcome }}\`
+      #       #### Terraform Initialization ⚙️\`${{ steps.terraform-init.outputs.init-status }}\`
+      #       #### Check Terraform state file 🔎:  \`${{ steps.terraform-init.outputs.state-check }}\`
+      #       #### Terraform Validation 🤖\`$${{ steps.validate.outcome }}\`
+      #       <details><summary>Validation Output</summary>
+
+      #       \`\`\`\n
+      #       ${{ steps.validate.outputs.stdout }}
+      #       \`\`\`
+
+      #       </details>
+
+      #       *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`, Working Directory: \`${{ steps.concatenate.outputs.terraformdirectory  }}\`, Workflow: \`${{ github.workflow }}\`*`;
+
+      #       // 3. If we have a comment, update it, otherwise create a new one
+      #       if (botComment) {
+      #         github.rest.issues.updateComment({
+      #           owner: context.repo.owner,
+      #           repo: context.repo.repo,
+      #           comment_id: botComment.id,
+      #           body: output
+      #         })
+      #       } else {
+      #         github.rest.issues.createComment({
+      #           issue_number: context.issue.number,
+      #           owner: context.repo.owner,
+      #           repo: context.repo.repo,
+      #           body: output
+      #         })
+      #       }
