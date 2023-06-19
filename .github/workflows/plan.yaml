@@ -1,0 +1,63 @@
+name: terraform-plan
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
+      terraform_directory:
+        required: true
+        type: string
+      artifact-name:
+        required: true
+        type: string
+    
+    secrets:
+      AZURE_CLIENT_ID :
+        required: true
+      AZURE_SUBSCRIPTION_ID:
+        required: true
+      AZURE_TENANT_ID:
+        required: true
+      token:
+        required: true
+      
+
+            
+jobs:
+  terraform-plan:
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    steps:
+      - name: Download Artifacts
+        id: download
+        uses: actions/download-artifact@v2
+        with:
+          name: ${{ inputs.artifact-name }}
+          path: terraform
+
+      - name: Terraform Directory Path
+        id: concatenate
+        run: echo "terraformdirectory=${{ steps.download.outputs.artifactPath }} / ${{ inputs.terraform_directory }}" >> $GITHUB_OUTPUT   
+  
+      #TERRAFORM COMMANDS
+      - name: Terraform Initialization
+        id: terraform-init
+        uses: CeridianCamelot/iac-reusable/actions/terraform_initialization@main
+        with:
+          working-directory:     ${{ steps.concatenate.outputs.terraformdirectory }}
+        env:
+          ARM_CLIENT_ID:       ${{ secrets.AZURE_CLIENT_ID  }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          ARM_TENANT_ID:       ${{ secrets.AZURE_TENANT_ID }}
+      
+      - name: Plan Terraform deployment
+        id: terraform-validate
+        #run: terraform plan -no-color -out=tfplan
+        run: terraform validate
+        working-directory:       ${{ steps.concatenate.outputs.terraformdirectory }}
+        env:
+          ARM_CLIENT_ID:       ${{ secrets.AZURE_CLIENT_ID  }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          ARM_TENANT_ID:       ${{ secrets.AZURE_TENANT_ID }}
