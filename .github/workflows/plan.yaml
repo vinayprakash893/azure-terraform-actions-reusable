@@ -39,7 +39,7 @@ jobs:
 
       - name: Terraform Directory Path
         id: concatenate
-        run: echo "terraformdirectory=${{ steps.download.outputs.artifactPath }} / ${{ inputs.terraform_directory }}" >> $GITHUB_OUTPUT   
+        run: echo "terraformdirectory=${{ steps.download.outputs.artifactPath }}/${{ inputs.terraform_directory }}" >> $GITHUB_OUTPUT   
   
       #TERRAFORM COMMANDS
       - name: Terraform Initialization
