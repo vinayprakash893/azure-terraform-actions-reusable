@@ -48,6 +48,7 @@ jobs:
         uses: vinayprakash893/azure-terraform-actions-reusable/actions@main
         with:
           working-directory: ${{ steps.concatenate.outputs.terraformdirectory }}
+          cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
         env:
           ARM_CLIENT_ID:       ${{ secrets.AZURE_CLIENT_ID  }}
           ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
