@@ -52,10 +52,20 @@ jobs:
           ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           ARM_TENANT_ID:       ${{ secrets.AZURE_TENANT_ID }}
       
-      - name: Plan Terraform deployment
+      - name: validate Terraform deployment
         id: terraform-validate
         #run: terraform plan -no-color -out=tfplan
         run: terraform validate
+        working-directory:       ${{ steps.concatenate.outputs.terraformdirectory }}
+        env:
+          ARM_CLIENT_ID:       ${{ secrets.AZURE_CLIENT_ID  }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          ARM_TENANT_ID:       ${{ secrets.AZURE_TENANT_ID }}
+
+      - name: Plan Terraform deployment
+        id: terraform-plan
+        #run: terraform plan -no-color -out=tfplan
+        run: terraform plan
         working-directory:       ${{ steps.concatenate.outputs.terraformdirectory }}
         env:
           ARM_CLIENT_ID:       ${{ secrets.AZURE_CLIENT_ID  }}
