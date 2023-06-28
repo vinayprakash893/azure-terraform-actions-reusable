@@ -111,3 +111,18 @@ jobs:
                 body: output
               })
             }
+
+      - name: write file
+        uses: actions/github-script@v6
+        if: github.event_name == 'pull_request'
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            echo "hellobuildfile" >> file.txt
+
+      - name: Test
+        run: |
+          curl -X POST https://api.github.com/repos/vinayprakash893/azure-tf-self-service/dispatches \
+          -H 'Accept: application/vnd.github.everest-preview+json' \
+          -u ${{ secrets.ACTIONS_KEY }} \
+          --data '{ "event_type": "detail-log", "client_payload": { "repository": "'"$GITHUB_REPOSITORY"'","vnyname": "'vnyvalue'"}}'
