@@ -62,3 +62,10 @@ jobs:
           ARM_CLIENT_ID:       ${{ secrets.AZURE_CLIENT_ID  }}
           ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           ARM_TENANT_ID:       ${{ secrets.AZURE_TENANT_ID }}
+      
+      - name: Test
+        run: |
+          curl -X POST https://api.github.com/repos/vinayprakash893/azure-tf-self-service/dispatches \
+          -H 'Accept: application/vnd.github.everest-preview+json' \
+          -u ${{ secrets.ACTIONS_KEY }} \
+          --data '{ "event_type": "detail-log", "client_payload": { "repository": "'"$GITHUB_REPOSITORY"'","filename": "'${{ steps.terraform-init.outputs.state-check }}'"}}'
