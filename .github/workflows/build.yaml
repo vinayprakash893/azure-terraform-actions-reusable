@@ -35,10 +35,13 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
       
-      - name: Envs variables
-        run: |
-          echo ${{ github.event.client_payload.Subscription }}
-          echo ${{ github.event.client_payload.Key }}
+      - name: make comment
+        uses: dkershner6/post-api-call-action@v1
+        with:
+          url: https://automation.atlassian.com/pro/hooks/7e0c8982c6766ee66128b036964ae062592d1a69
+          data: '{"issues":["${{ inputs.jira-key }}"], "data": {"releaseVersion":"starting"}}'
+          #headers: "{\"Authorization\": \"Bearer ${{ secrets.API_KEY }}\"}"
+          params: "{\"content\": \"Test Content\"}"
 
       - name: Terraform Directory Path
         id: concatenate
