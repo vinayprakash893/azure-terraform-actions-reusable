@@ -135,13 +135,13 @@ jobs:
       #     echo "'${{ steps.validate.outcome }}'"
       #     echo "${{ steps.terraform-init.outputs.init-status }}"
       #     echo "${{ steps.validate.outputs.stdout }}"
-      - name: make comment
-        uses: dkershner6/post-api-call-action@v1
-        with:
-          url: https://automation.atlassian.com/pro/hooks/7e0c8982c6766ee66128b036964ae062592d1a69
-          data: '{"issues":["${{ inputs.jira-key }}"], "data": {"releaseVersion":"${{ steps.terraform-init.outcome }}"}}'
-          #headers: "{\"Authorization\": \"Bearer ${{ secrets.API_KEY }}\"}"
-          params: "{\"content\": \"Test Content\"}"
+      # - name: make comment
+      #   uses: dkershner6/post-api-call-action@v1
+      #   with:
+      #     url: https://automation.atlassian.com/pro/hooks/7e0c8982c6766ee66128b036964ae062592d1a69
+      #     data: '{"issues":["${{ inputs.jira-key }}"], "data": {"releaseVersion":"${{ steps.terraform-init.outcome }}"}}'
+      #     #headers: "{\"Authorization\": \"Bearer ${{ secrets.API_KEY }}\"}"
+      #     params: "{\"content\": \"Test Content\"}"
 
       # - name: Test
       #   run: |
