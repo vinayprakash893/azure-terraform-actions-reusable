@@ -76,6 +76,11 @@ jobs:
         run: terraform validate 
         working-directory: ${{ steps.concatenate.outputs.terraformdirectory }}
       
+      - name : Print Title of PR
+        env:
+            TITLE: ${{ github.event.pull_request.title }}
+        run: echo The Title of your PR is $TITLE
+      
       - uses: actions/github-script@v6
         #if: github.event_name == 'pull_request'
         with:
@@ -88,10 +93,7 @@ jobs:
               body: '👋 Thanks for reporting!'
             })
       
-      - name : Print Title of PR
-        env:
-            TITLE: ${{ github.event.pull_request.title }}
-        run: echo The Title of your PR is $TITLE
+      
 
       # - name: write file
       #   uses: actions/github-script@v6
