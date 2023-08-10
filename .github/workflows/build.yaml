@@ -98,10 +98,6 @@ jobs:
             #### Terraform Validation 🤖\`$${{ steps.validate.outcome }}\`
             <details><summary>Validation Output</summary>
 
-            # \`\`\`\n
-            # ${{ steps.validate.outputs.stdout }}
-            # \`\`\`
-
             </details>
 
             *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`, Working Directory: \`${{ steps.concatenate.outputs.terraformdirectory  }}\`, Workflow: \`${{ github.workflow }}\`*`;
