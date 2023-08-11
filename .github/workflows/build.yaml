@@ -96,7 +96,7 @@ jobs:
       - name: get the comment-message
         if: github.event_name == 'push'
         env:
-            MESSGE: ${{ github.event.commits[0].message }}
+            MESSGE: ${{ github.event.head_commit.message }}
         run: |
           echo Merge Message is: $MESSGE
           number=$(echo $MESSGE | grep -oP 'pull request #\K\d+'|| true)
