@@ -82,7 +82,7 @@ jobs:
         run: echo The Title of your PR is $TITLE
       
       - uses: actions/github-script@v6
-        #if: github.event_name == 'pull_request'
+        if: github.event_name == 'pull_request'
         with:
           github-token: ${{ secrets.REPO_SCOPED_TOKEN }}
           script: |
@@ -90,10 +90,45 @@ jobs:
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: '👋 Thanks for reporting!'
+              body: 'Pull Request comment'
             })
       
+      - name: get the comment-message
+        if: github.event_name == 'push'
+        env:
+            MESSGE: ${{ github.event.commits[0].message }}
+        run: |
+          echo Merge Message is: $MESSGE
+          number=$(echo $MESSGE | grep -oP 'pull request #\K\d+'|| true)
+          if [ -z "$number" ]; then
+              echo "No pull request number found."
+              PR_Number=''
+              echo "PR_Number=$PR_Number" >> $GITHUB_ENV
+          else
+              echo "Pull request number: $number"
+              PR_Number=$number
+              echo "PR_Number=$PR_Number" >> $GITHUB_ENV
+          fi
+          exit 0
       
+      - name: print commit number
+        if: env.PR_Number != ''
+        run: |
+          echo "$PR_Number"
+        
+      - name: Add comment message in PR
+        if: env.PR_Number != ''
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.REPO_SCOPED_TOKEN }}
+          script: |
+            const prNumber = process.env.PR_Number;
+            github.rest.issues.createComment({
+              issue_number: prNumber,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: 'Main branch comment'
+            })
 
       # - name: write file
       #   uses: actions/github-script@v6
