@@ -63,9 +63,54 @@ jobs:
           ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           ARM_TENANT_ID:       ${{ secrets.AZURE_TENANT_ID }}
       
-      - name: Test
-        run: |
-          curl -X POST https://api.github.com/repos/vinayprakash893/azure-tf-self-service/dispatches \
-          -H 'Accept: application/vnd.github.everest-preview+json' \
-          -u ${{ secrets.ACTIONS_KEY }} \
-          --data '{ "event_type": "detail-log", "client_payload": { "repository": "'"$GITHUB_REPOSITORY"'","filename": "'${{ steps.terraform-apply.outcome }}'"}}'
+      # - name: Test
+      #   run: |
+      #     curl -X POST https://api.github.com/repos/vinayprakash893/azure-tf-self-service/dispatches \
+      #     -H 'Accept: application/vnd.github.everest-preview+json' \
+      #     -u ${{ secrets.ACTIONS_KEY }} \
+      #     --data '{ "event_type": "detail-log", "client_payload": { "repository": "'"$GITHUB_REPOSITORY"'","filename": "'${{ steps.terraform-apply.outcome }}'"}}'
+
+      - uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.REPO_SCOPED_TOKEN }}
+          script: |
+            // 1. Retrieve existing bot comments for the PR
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            })
+            const botComment = comments.find(comment => {
+              return comment.user.type === 'Bot' && comment.body.includes('Terraform Format and Style')
+            })
+
+            // 2. Prepare format of the comment
+            const output = `#### Terraform Format and Style 🖌\``
+            #### Terraform Initialization ⚙️\`\`
+            #### Check Terraform state file 🔎:  \`\`
+            #### Terraform Validation 🤖\``
+            <details><summary>Validation Output</summary>
+
+            \`\`\`\n
+            \`\`\`
+
+            </details>
+
+            *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`, Working Directory: \`${{ steps.concatenate.outputs.terraformdirectory  }}\`, Workflow: \`${{ github.workflow }}\`*`;
+
+            // 3. If we have a comment, update it, otherwise create a new one
+            if (botComment) {
+              github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: botComment.id,
+                body: output
+              })
+            } else {
+              github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: output
+              })
+            }
