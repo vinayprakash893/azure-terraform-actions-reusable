@@ -76,7 +76,7 @@ jobs:
         run: terraform validate 
         working-directory: ${{ steps.concatenate.outputs.terraformdirectory }}
 
-      - name: Run Terraform Format Check
+      - name: Npm install
         run: npm install axios
       
       - name : Print Title of PR
@@ -138,7 +138,7 @@ jobs:
             const data = {
               "issues": ["ISM1-10"],
               "data": {
-                "releaseVersion": `workingfrom piepline`
+                "releaseVersion": output
               }
             };
 
