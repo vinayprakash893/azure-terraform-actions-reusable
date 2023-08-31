@@ -42,6 +42,10 @@ jobs:
       #     data: '{"issues":["${{ inputs.jira-key }}"], "data": {"releaseVersion":"starting"}}'
       #     #headers: "{\"Authorization\": \"Bearer ${{ secrets.API_KEY }}\"}"
       #     params: "{\"content\": \"Test Content\"}"
+      - name: Dump GitHub context
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+        run: echo "$GITHUB_CONTEXT"
 
       - name: Terraform Directory Path
         id: concatenate
@@ -61,7 +65,7 @@ jobs:
           working-directory: ${{ steps.concatenate.outputs.terraformdirectory }}
           cli_token: ${{ secrets.TF_API_TOKEN }}
         env:
-          ARM_CLIENT_ID:       ${{ secrets.AZURE_CLIENT_ID  }}
+          ARM_CLIENT_ID:       ${{ env.AZURE_CLIENT_ID  }}
           ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           ARM_TENANT_ID:       ${{ secrets.AZURE_TENANT_ID }}
 
@@ -76,8 +80,8 @@ jobs:
         run: terraform validate 
         working-directory: ${{ steps.concatenate.outputs.terraformdirectory }}
 
-      - name: Npm install
-        run: npm install axios
+      # - name: Npm install
+      #   run: npm install axios
       
       - name : Print Title of PR
         env:
