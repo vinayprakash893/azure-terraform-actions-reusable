@@ -15,6 +15,9 @@ on:
       jira-key:
         required: false
         type: string
+      AZURE_CLIENT_ID:
+        required: false
+        type: string
     
     secrets:
       AZURE_CLIENT_ID :
@@ -68,7 +71,7 @@ jobs:
           working-directory: ${{ steps.concatenate.outputs.terraformdirectory }}
           cli_token: ${{ secrets.TF_API_TOKEN }}
         env:
-          ARM_CLIENT_ID:       ${{ env.AZURE_CLIENT_ID  }}
+          ARM_CLIENT_ID:       ${{ inputs.AZURE_CLIENT_ID }}
           ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           ARM_TENANT_ID:       ${{ secrets.AZURE_TENANT_ID }}
 
