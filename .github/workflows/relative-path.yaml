@@ -20,7 +20,7 @@ permissions:
 
 jobs:
   build:
-    uses: ./actions
+    uses: ../actions
     with:
       environment: dev
       terraform_directory: "app1"
