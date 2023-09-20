@@ -66,7 +66,7 @@ jobs:
       #TERRAFORM COMMANDS
       - name: Terraform Initialization
         id: terraform-init
-        uses: vinayprakash893/azure-terraform-actions-reusable/actions@main
+        uses: ./actions
         with:
           working-directory: ${{ steps.concatenate.outputs.terraformdirectory }}
           cli_token: ${{ secrets.TF_API_TOKEN }}
