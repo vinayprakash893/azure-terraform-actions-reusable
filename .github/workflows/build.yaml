@@ -89,6 +89,12 @@ jobs:
           ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           ARM_TENANT_ID:       ${{ secrets.AZURE_TENANT_ID }}
 
+      - name: shell2
+        run:  |
+          env
+          ls -l
+          pwd
+
       - name: Terraform fmt
         id: fmt
         run: terraform fmt -check
