@@ -68,7 +68,7 @@ jobs:
         with:
           repository: 'vinayprakash893/azure-terraform-actions-reusable'
           ref: main
-          token: ${{ secrets.API_GITHUB_TOKEN }}
+          #token: ${{ secrets.API_GITHUB_TOKEN }}
           path: 'reusable-workflows-path'
       
       - name: shell
