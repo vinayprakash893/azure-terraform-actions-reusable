@@ -63,6 +63,20 @@ jobs:
           name: ${{ inputs.artifact-name }}
           path: ${{ steps.concatenate.outputs.terraformdirectory }}
           
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          repository: 'vinayprakash893/azure-terraform-actions-reusable'
+          ref: main
+          token: ${{ secrets.API_GITHUB_TOKEN }}
+          path: 'reusable-workflows-path'
+      
+      - name: shell
+        run:  |
+          env
+          ls -l
+          pwd
+
       #TERRAFORM COMMANDS
       - name: Terraform Initialization
         id: terraform-init
