@@ -84,10 +84,10 @@ jobs:
         with:
           working-directory: ${{ steps.concatenate.outputs.terraformdirectory }}
           cli_token: ${{ secrets.TF_API_TOKEN }}
-        env:
-          # ARM_CLIENT_ID:       ${{ inputs.AZURE_CLIENT_ID }}
-          # ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-          # ARM_TENANT_ID:       ${{ secrets.AZURE_TENANT_ID }}
+        # env:
+        #   ARM_CLIENT_ID:       ${{ inputs.AZURE_CLIENT_ID }}
+        #   ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+        #   ARM_TENANT_ID:       ${{ secrets.AZURE_TENANT_ID }}
 
       - name: shell2
         run:  |
