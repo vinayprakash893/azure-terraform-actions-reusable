@@ -29,6 +29,24 @@ runs:
         terraform_version: ${{ inputs.terraform-version}}
         cli_config_credentials_token: ${{ inputs.cli_token}}
     
+    - name: Login to Terraform Cloud
+      id: login
+      shell: bash
+      run: |
+        terraform login \
+          -token=${{ secrets.TF_API_TOKEN }} \
+          -name="cloud_user_p_816fb095" \
+          -org="Cloudtech"
+      
+    - name: Set Azure credentials
+      id: cred
+      shell: bash
+      run: |
+        echo "ARM_CLIENT_ID=${{ secrets.ARM_CLIENT_ID }}" >> $GITHUB_ENV
+        echo "ARM_SUBSCRIPTION_ID=${{ secrets.ARM_SUBSCRIPTION_ID }}" >> $GITHUB_ENV
+        echo "ARM_TENANT_ID=${{ secrets.ARM_TENANT_ID }}" >> $GITHUB_ENV
+        echo "ARM_SUBSCRIPTION_ID=${{ secrets.ARM_SUBSCRIPTION_ID }}" >> $GITHUB_ENV
+    
     - name: Initialize Terraform
       id: init
       shell: bash
