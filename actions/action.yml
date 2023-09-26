@@ -34,7 +34,7 @@ runs:
       shell: bash
       run: |
         terraform login \
-          -token=${{ secrets.TF_API_TOKEN }} \
+          -token=${{ inputs.cli_token }} \
           -name="cloud_user_p_816fb095" \
           -org="Cloudtech"
       
