@@ -42,21 +42,22 @@ runs:
       id: cred
       shell: bash
       run: |
-        echo "ARM_CLIENT_ID=${{ secrets.ARM_CLIENT_ID }}" >> $GITHUB_ENV
-        echo "ARM_SUBSCRIPTION_ID=${{ secrets.ARM_SUBSCRIPTION_ID }}" >> $GITHUB_ENV
-        echo "ARM_TENANT_ID=${{ secrets.ARM_TENANT_ID }}" >> $GITHUB_ENV
-        echo "ARM_SUBSCRIPTION_ID=${{ secrets.ARM_SUBSCRIPTION_ID }}" >> $GITHUB_ENV
+        echo "ARM_CLIENT_ID=${{ env.ARM_CLIENT_ID }}" >> $GITHUB_ENV
+        echo "ARM_SUBSCRIPTION_ID=${{ env.ARM_SUBSCRIPTION_ID }}" >> $GITHUB_ENV
+        echo "ARM_TENANT_ID=${{ env.ARM_TENANT_ID }}" >> $GITHUB_ENV
+        echo "ARM_CLIENT_SECRET=${{ env.ARM_CLIENT_SECRET }}" >> $GITHUB_ENV
     
     - name: Initialize Terraform
       id: init
       shell: bash
       run: terraform init 
       working-directory: ${{ inputs.working-directory}}
-      # env:
-      #   ARM_CLIENT_ID: ${{ env.ARM_CLIENT_ID }}
-      #   ARM_SUBSCRIPTION_ID: ${{ env.ARM_SUBSCRIPTION_ID }}
-      #   ARM_TENANT_ID: ${{ env.ARM_TENANT_ID }}
-        # ARM_USE_OIDC: true
+      env:
+        ARM_CLIENT_ID: ${{ env.ARM_CLIENT_ID }}
+        ARM_SUBSCRIPTION_ID: ${{ env.ARM_SUBSCRIPTION_ID }}
+        ARM_TENANT_ID: ${{ env.ARM_TENANT_ID }}
+        ARM_CLIENT_SECRET: ${{ env.ARM_CLIENT_SECRET }}
+        #ARM_USE_OIDC: true
         
     # - name: Check Terraform state file
     #   id: state
