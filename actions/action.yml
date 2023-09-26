@@ -26,7 +26,7 @@ runs:
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v2
       with:
-        terraform_version: ${{ inputs.terraform-version}}
+        #terraform_version: ${{ inputs.terraform-version}}
         cli_config_credentials_token: ${{ inputs.cli_token}}
     
     # - name: Login to Terraform Cloud
