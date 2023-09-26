@@ -29,23 +29,23 @@ runs:
         terraform_version: ${{ inputs.terraform-version}}
         cli_config_credentials_token: ${{ inputs.cli_token}}
     
-    - name: Login to Terraform Cloud
-      id: login
-      shell: bash
-      run: |
-        terraform login \
-          -token=${{ inputs.cli_token }} \
-          -name="cloud_user_p_816fb095" \
-          -org="Cloudtech"
+    # - name: Login to Terraform Cloud
+    #   id: login
+    #   shell: bash
+    #   run: |
+    #     terraform login \
+    #       -token=${{ inputs.cli_token }} \
+    #       -name="cloud_user_p_816fb095" \
+    #       -org="Cloudtech"
       
     - name: Set Azure credentials
       id: cred
       shell: bash
       run: |
-        echo "ARM_CLIENT_ID=${{ env.ARM_CLIENT_ID }}" >> $GITHUB_ENV
-        echo "ARM_SUBSCRIPTION_ID=${{ env.ARM_SUBSCRIPTION_ID }}" >> $GITHUB_ENV
-        echo "ARM_TENANT_ID=${{ env.ARM_TENANT_ID }}" >> $GITHUB_ENV
-        echo "ARM_CLIENT_SECRET=${{ env.ARM_CLIENT_SECRET }}" >> $GITHUB_ENV
+        echo "TF_VAR_ARM_CLIENT_ID=${{ env.ARM_CLIENT_ID }}" >> $GITHUB_ENV
+        echo "TF_VAR_ARM_SUBSCRIPTION_ID=${{ env.ARM_SUBSCRIPTION_ID }}" >> $GITHUB_ENV
+        echo "TF_VAR_ARM_TENANT_ID=${{ env.ARM_TENANT_ID }}" >> $GITHUB_ENV
+        echo "TF_VAR_ARM_CLIENT_SECRET=${{ env.ARM_CLIENT_SECRET }}" >> $GITHUB_ENV
     
     - name: Initialize Terraform
       id: init

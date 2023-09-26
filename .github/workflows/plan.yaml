@@ -49,11 +49,15 @@ jobs:
         with:
           working-directory:     ${{ steps.concatenate.outputs.terraformdirectory }}
           cli_token: ${{ secrets.TF_API_TOKEN }}
-        # env:
-        #   ARM_CLIENT_ID:       ${{ secrets.AZURE_CLIENT_ID  }}
-        #   ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-        #   ARM_TENANT_ID:       ${{ secrets.AZURE_TENANT_ID }}
-        #   ARM_CLIENT_SECRET:   ${{ secrets.ARM_CLIENT_SECRET }}
+        env:
+          ARM_CLIENT_ID:       ${{ secrets.AZURE_CLIENT_ID  }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          ARM_TENANT_ID:       ${{ secrets.AZURE_TENANT_ID }}
+          ARM_CLIENT_SECRET:   ${{ secrets.ARM_CLIENT_SECRET }}
+          TF_VAR_ARM_CLIENT_ID:       ${{ secrets.AZURE_CLIENT_ID  }}
+          TF_VAR_ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          TF_VAR_ARM_TENANT_ID:       ${{ secrets.AZURE_TENANT_ID }}
+          TF_VAR_ARM_CLIENT_SECRET:   ${{ secrets.ARM_CLIENT_SECRET }}
       
       - name: validate Terraform deployment
         id: terraform-validate
@@ -71,15 +75,16 @@ jobs:
         #run: terraform plan -no-color -out=tfplan
         run: terraform plan
         working-directory:       ${{ steps.concatenate.outputs.terraformdirectory }}
-        # env:
-        #   ARM_CLIENT_ID:       ${{ secrets.AZURE_CLIENT_ID  }}
-        #   ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-        #   ARM_TENANT_ID:       ${{ secrets.AZURE_TENANT_ID }}
-        #   ARM_CLIENT_SECRET:   ${{ secrets.ARM_CLIENT_SECRET }}
-        #   TF_VAR_ARM_CLIENT_ID:       ${{ secrets.AZURE_CLIENT_ID  }}
-        #   TF_VAR_ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-        #   TF_VAR_ARM_TENANT_ID:       ${{ secrets.AZURE_TENANT_ID }}
-        #   TF_VAR_ARM_CLIENT_SECRET:   ${{ secrets.ARM_CLIENT_SECRET }}
+        env:
+          ARM_CLIENT_ID:       ${{ secrets.AZURE_CLIENT_ID  }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          ARM_TENANT_ID:       ${{ secrets.AZURE_TENANT_ID }}
+          ARM_CLIENT_SECRET:   ${{ secrets.ARM_CLIENT_SECRET }}
+          TF_VAR_ARM_CLIENT_ID:       ${{ secrets.AZURE_CLIENT_ID  }}
+          TF_VAR_ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          TF_VAR_ARM_TENANT_ID:       ${{ secrets.AZURE_TENANT_ID }}
+          TF_VAR_ARM_CLIENT_SECRET:   ${{ secrets.ARM_CLIENT_SECRET }}
+          ARM_USE_OIDC: true
       
       - uses: actions/github-script@v6
         with:
