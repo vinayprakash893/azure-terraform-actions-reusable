@@ -113,9 +113,9 @@ jobs:
 
       - name: Plan Terraform deployment
         if: github.event_name == 'workflow_dispatch'
-        id: terraform-plan --destroy
+        id: terraform-plan-destroy
         #run: terraform plan -no-color -out=tfplan
-        run: terraform plan
+        run: terraform plan --destroy
         working-directory:       ${{ steps.concatenate.outputs.terraformdirectory }}
         env:
           ARM_CLIENT_ID:       ${{ secrets.ARM_CLIENT_ID }}
