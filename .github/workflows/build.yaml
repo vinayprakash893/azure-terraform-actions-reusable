@@ -109,7 +109,16 @@ jobs:
 
       # - name: Npm install
       #   run: npm install axios
-      
+
+      - name: Plan Terraform deployment
+        id: terraform-plan
+        #run: terraform plan -no-color -out=tfplan
+        run: terraform plan
+        working-directory:       ${{ steps.concatenate.outputs.terraformdirectory }}
+        env:
+          ARM_USE_OIDC: true
+
+
       - name : Print Title of PR
         env:
             TITLE: ${{ github.event.pull_request.title }}
