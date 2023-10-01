@@ -18,6 +18,9 @@ on:
       ARM_CLIENT_ID:
         required: false
         type: string
+      destroy:
+        required: false
+        type: boolean
     
     secrets:
       ARM_CLIENT_ID :
@@ -112,7 +115,7 @@ jobs:
       #   run: npm install axios
 
       - name: Plan Terraform deployment
-        if: github.event_name == 'workflow_dispatch'
+        if: github.event_name == 'workflow_dispatch' && ${{ inputs.destroy }} == true
         id: terraform-plan-destroy
         #run: terraform plan -no-color -out=tfplan
         run: terraform plan --destroy
