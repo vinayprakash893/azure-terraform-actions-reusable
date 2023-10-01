@@ -14,11 +14,11 @@ on:
         type: string
     
     secrets:
-      AZURE_CLIENT_ID :
+      ARM_CLIENT_ID :
         required: true
-      AZURE_SUBSCRIPTION_ID:
+      ARM_SUBSCRIPTION_ID:
         required: true
-      AZURE_TENANT_ID:
+      ARM_TENANT_ID:
         required: true
       token:
         required: true
@@ -50,13 +50,13 @@ jobs:
           working-directory:     ${{ steps.concatenate.outputs.terraformdirectory }}
           cli_token: ${{ secrets.TF_API_TOKEN }}
         env:
-          ARM_CLIENT_ID:       ${{ secrets.AZURE_CLIENT_ID  }}
-          ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-          ARM_TENANT_ID:       ${{ secrets.AZURE_TENANT_ID }}
+          ARM_CLIENT_ID:       ${{ secrets.ARM_CLIENT_ID  }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+          ARM_TENANT_ID:       ${{ secrets.ARM_TENANT_ID }}
           ARM_CLIENT_SECRET:   ${{ secrets.ARM_CLIENT_SECRET }}
-          TF_VAR_ARM_CLIENT_ID:       ${{ secrets.AZURE_CLIENT_ID  }}
-          TF_VAR_ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-          TF_VAR_ARM_TENANT_ID:       ${{ secrets.AZURE_TENANT_ID }}
+          TF_VAR_ARM_CLIENT_ID:       ${{ secrets.ARM_CLIENT_ID  }}
+          TF_VAR_ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+          TF_VAR_ARM_TENANT_ID:       ${{ secrets.ARM_TENANT_ID }}
           TF_VAR_ARM_CLIENT_SECRET:   ${{ secrets.ARM_CLIENT_SECRET }}
       
       - name: validate Terraform deployment
@@ -65,9 +65,9 @@ jobs:
         run: terraform validate
         working-directory:       ${{ steps.concatenate.outputs.terraformdirectory }}
         # env:
-        #   ARM_CLIENT_ID:       ${{ secrets.AZURE_CLIENT_ID  }}
-        #   ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-        #   ARM_TENANT_ID:       ${{ secrets.AZURE_TENANT_ID }}
+        #   ARM_CLIENT_ID:       ${{ secrets.ARM_CLIENT_ID  }}
+        #   ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+        #   ARM_TENANT_ID:       ${{ secrets.ARM_TENANT_ID }}
         #   ARM_CLIENT_SECRET:   ${{ secrets.ARM_CLIENT_SECRET }}
 
       - name: Plan Terraform deployment
@@ -76,13 +76,13 @@ jobs:
         run: terraform plan
         working-directory:       ${{ steps.concatenate.outputs.terraformdirectory }}
         env:
-          ARM_CLIENT_ID:       ${{ secrets.AZURE_CLIENT_ID  }}
-          ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-          ARM_TENANT_ID:       ${{ secrets.AZURE_TENANT_ID }}
+          ARM_CLIENT_ID:       ${{ secrets.ARM_CLIENT_ID  }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+          ARM_TENANT_ID:       ${{ secrets.ARM_TENANT_ID }}
           ARM_CLIENT_SECRET:   ${{ secrets.ARM_CLIENT_SECRET }}
-          TF_VAR_ARM_CLIENT_ID:       ${{ secrets.AZURE_CLIENT_ID  }}
-          TF_VAR_ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-          TF_VAR_ARM_TENANT_ID:       ${{ secrets.AZURE_TENANT_ID }}
+          TF_VAR_ARM_CLIENT_ID:       ${{ secrets.ARM_CLIENT_ID  }}
+          TF_VAR_ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+          TF_VAR_ARM_TENANT_ID:       ${{ secrets.ARM_TENANT_ID }}
           TF_VAR_ARM_CLIENT_SECRET:   ${{ secrets.ARM_CLIENT_SECRET }}
           ARM_USE_OIDC: true
       

@@ -14,11 +14,11 @@ on:
         type: string
     
     secrets:
-      AZURE_CLIENT_ID :
+      ARM_CLIENT_ID :
         required: true
-      AZURE_SUBSCRIPTION_ID:
+      ARM_SUBSCRIPTION_ID:
         required: true
-      AZURE_TENANT_ID:
+      ARM_TENANT_ID:
         required: true
       token:
         required: true
@@ -49,9 +49,9 @@ jobs:
           working-directory:     ${{ steps.concatenate.outputs.terraformdirectory }}
           cli_token: ${{ secrets.TF_API_TOKEN }}
         env:
-          ARM_CLIENT_ID:       ${{ secrets.AZURE_CLIENT_ID  }}
-          ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-          ARM_TENANT_ID:       ${{ secrets.AZURE_TENANT_ID }}
+          ARM_CLIENT_ID:       ${{ secrets.ARM_CLIENT_ID  }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+          ARM_TENANT_ID:       ${{ secrets.ARM_TENANT_ID }}
       
       - name: Apply Terraform deployment
         id: terraform-apply
@@ -59,9 +59,9 @@ jobs:
         run: terraform apply --auto-approve
         working-directory:       ${{ steps.concatenate.outputs.terraformdirectory }}
         env:
-          ARM_CLIENT_ID:       ${{ secrets.AZURE_CLIENT_ID  }}
-          ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-          ARM_TENANT_ID:       ${{ secrets.AZURE_TENANT_ID }}
+          ARM_CLIENT_ID:       ${{ secrets.ARM_CLIENT_ID  }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+          ARM_TENANT_ID:       ${{ secrets.ARM_TENANT_ID }}
       
       # - name: Test
       #   run: |
