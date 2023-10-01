@@ -115,7 +115,7 @@ jobs:
       #   run: npm install axios
 
       - name: Plan Terraform deployment
-        if: github.event_name == 'workflow_dispatch' && ${{ inputs.destroy }} == 'true'
+        if: github.event_name == 'workflow_dispatch' && ${{ github.event.inputs.destroy }} == 'true'
         id: terraform-plan-destroy
         #run: terraform plan -no-color -out=tfplan
         run: terraform plan --destroy
