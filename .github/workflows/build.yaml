@@ -115,8 +115,12 @@ jobs:
         #run: terraform plan -no-color -out=tfplan
         run: terraform plan
         working-directory:       ${{ steps.concatenate.outputs.terraformdirectory }}
-        env:
-          ARM_USE_OIDC: true
+        # env:
+        #   ARM_CLIENT_ID:       ${{ inputs.AZURE_CLIENT_ID }}
+        #   ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+        #   ARM_TENANT_ID:       ${{ secrets.AZURE_TENANT_ID }}
+        #   ARM_CLIENT_SECRET:  ${{ secrets.ARM_CLIENT_SECRET }}
+        #   ARM_USE_OIDC: true
 
 
       - name : Print Title of PR
