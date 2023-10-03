@@ -114,24 +114,30 @@ jobs:
       # - name: Npm install
       #   run: npm install axios
 
-      - name: Plan Terraform deployment
-        if: github.event_name == 'workflow_dispatch' &&  github.event.inputs.destroy == 'true'
-        id: terraform-plan-destroy
-        #run: terraform plan -no-color -out=tfplan
-        run: terraform plan --destroy
-        working-directory:       ${{ steps.concatenate.outputs.terraformdirectory }}
-        env:
-          ARM_CLIENT_ID:       ${{ secrets.ARM_CLIENT_ID }}
-          ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
-          ARM_TENANT_ID:       ${{ secrets.ARM_TENANT_ID }}
-          ARM_CLIENT_SECRET:  ${{ secrets.ARM_CLIENT_SECRET }}
-          ARM_USE_OIDC: true
+      # - name: Plan Terraform deployment
+      #   if: github.event_name == 'workflow_dispatch' &&  github.event.inputs.destroy == 'true'
+      #   id: terraform-plan-destroy
+      #   #run: terraform plan -no-color -out=tfplan
+      #   run: terraform plan --destroy
+      #   working-directory:       ${{ steps.concatenate.outputs.terraformdirectory }}
+      #   env:
+      #     ARM_CLIENT_ID:       ${{ secrets.ARM_CLIENT_ID }}
+      #     ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+      #     ARM_TENANT_ID:       ${{ secrets.ARM_TENANT_ID }}
+      #     ARM_CLIENT_SECRET:  ${{ secrets.ARM_CLIENT_SECRET }}
+      #     ARM_USE_OIDC: true
 
       - name: Plan Terraform deployment
         if: github.event_name != 'workflow_dispatch'
         id: terraform-plan
         #run: terraform plan -no-color -out=tfplan
-        run: terraform plan
+        run: |
+          if: github.event_name == 'workflow_dispatch' &&  github.event.inputs.destroy == 'true'
+          do
+            terraform plan --destroy
+          else
+            terraform plan
+          done
         working-directory:       ${{ steps.concatenate.outputs.terraformdirectory }}
         env:
           ARM_CLIENT_ID:       ${{ secrets.ARM_CLIENT_ID }}
