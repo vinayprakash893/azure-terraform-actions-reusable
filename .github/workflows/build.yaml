@@ -128,7 +128,7 @@ jobs:
       #     ARM_USE_OIDC: true
 
       - name: Plan Terraform deployment
-        if: github.event_name != 'workflow_dispatch'
+        #if: github.event_name != 'workflow_dispatch'
         id: terraform-plan
         #run: terraform plan -no-color -out=tfplan
         run: |
