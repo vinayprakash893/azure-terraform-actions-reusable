@@ -128,10 +128,8 @@ jobs:
       #     ARM_USE_OIDC: true
 
       - name: Plan Terraform deployment
-        #if: github.event_name != 'workflow_dispatch'
         id: terraform-plan
         shell: bash
-        #run: terraform plan -no-color -out=tfplan
         run: |
           if [[ ${{ github.event_name }} == 'workflow_dispatch' && ${{ github.event.inputs.destroy }} == 'true' ]]; 
           then

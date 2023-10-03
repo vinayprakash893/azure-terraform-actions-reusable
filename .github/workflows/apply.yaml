@@ -53,16 +53,36 @@ jobs:
           ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
           ARM_TENANT_ID:       ${{ secrets.ARM_TENANT_ID }}
       
-      - name: Apply Terraform deployment
-        id: terraform-apply
-        #run: terraform plan -no-color -out=tfplan
-        run: terraform apply --auto-approve
+      # - name: Apply Terraform deployment
+      #   id: terraform-apply
+      #   #run: terraform plan -no-color -out=tfplan
+      #   run: terraform apply --auto-approve
+      #   working-directory:       ${{ steps.concatenate.outputs.terraformdirectory }}
+      #   env:
+      #     ARM_CLIENT_ID:       ${{ secrets.ARM_CLIENT_ID  }}
+      #     ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+      #     ARM_TENANT_ID:       ${{ secrets.ARM_TENANT_ID }}
+
+      - name: Plan Terraform deployment
+        id: terraform-plan
+        shell: bash
+        run: |
+          if [[ ${{ github.event_name }} == 'workflow_dispatch' && ${{ github.event.inputs.destroy }} == 'true' ]]; 
+          then
+            echo "Executing terraform plan --destroy "
+            terraform plan --destroy
+          else
+            echo "Executing terraform plan"
+            terraform plan
+          fi
         working-directory:       ${{ steps.concatenate.outputs.terraformdirectory }}
         env:
-          ARM_CLIENT_ID:       ${{ secrets.ARM_CLIENT_ID  }}
+          ARM_CLIENT_ID:       ${{ secrets.ARM_CLIENT_ID }}
           ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
           ARM_TENANT_ID:       ${{ secrets.ARM_TENANT_ID }}
-      
+          ARM_CLIENT_SECRET:  ${{ secrets.ARM_CLIENT_SECRET }}
+          ARM_USE_OIDC: true
+          
       # - name: Test
       #   run: |
       #     curl -X POST https://api.github.com/repos/vinayprakash893/azure-tf-self-service/dispatches \
