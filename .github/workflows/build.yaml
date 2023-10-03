@@ -133,12 +133,12 @@ jobs:
         shell: bash
         #run: terraform plan -no-color -out=tfplan
         run: |
-          if: ${{ github.event_name }} == 'workflow_dispatch' &&  ${{ github.event.inputs.destroy }} == 'true'
-          do
+          if [[ ${{ github.event_name }} == 'workflow_dispatch' && ${{ github.event.inputs.destroy }} == 'true' ]]; 
+          then
             terraform plan --destroy
           else
             terraform plan
-          done
+          fi
         working-directory:       ${{ steps.concatenate.outputs.terraformdirectory }}
         env:
           ARM_CLIENT_ID:       ${{ secrets.ARM_CLIENT_ID }}
