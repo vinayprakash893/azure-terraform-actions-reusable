@@ -135,8 +135,10 @@ jobs:
         run: |
           if [[ ${{ github.event_name }} == 'workflow_dispatch' && ${{ github.event.inputs.destroy }} == 'true' ]]; 
           then
+            echo "Executing terraform plan --destroy "
             terraform plan --destroy
           else
+            echo "Executing terraform plan"
             terraform plan
           fi
         working-directory:       ${{ steps.concatenate.outputs.terraformdirectory }}
