@@ -90,7 +90,7 @@ jobs:
         id: terraform-plan
         shell: bash
         run: |
-          if [[ ${{ github.event_name }} == 'workflow_dispatch' && ${{ github.event.inputs.destroy }} == 'true' ]]; 
+          if [[ ${{ github.event_name }} == 'workflow_dispatch' && ${{ github.event.inputs.destroy || 'false' }} == 'true' ]]; 
           then
             echo "Executing terraform plan --destroy "
             terraform plan --destroy

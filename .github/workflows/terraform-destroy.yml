@@ -1,0 +1,82 @@
+# New - use the terraform destroy in the resusable fraework
+
+#1 change in planresuasble yaml.
+#init is same, no chnages
+#2  in plan.yaml
+      - name: Plan Terraform deployment
+        id: terraform-plan
+        shell: bash
+        run: |
+          if [[ ${{ github.event_name }} == 'workflow_dispatch' && ${{ github.event.inputs.destroy || 'false' }} == 'true' ]]; 
+          then
+            echo "Executing terraform plan --destroy "
+            terraform plan --destroy
+          else
+            echo "Executing terraform plan"
+            terraform plan
+          fi
+        working-directory:       ${{ steps.concatenate.outputs.terraformdirectory }}
+        env:
+          ARM_CLIENT_ID:       ${{ secrets.ARM_CLIENT_ID }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+          ARM_TENANT_ID:       ${{ secrets.ARM_TENANT_ID }}
+          ARM_CLIENT_SECRET:  ${{ secrets.ARM_CLIENT_SECRET }}
+          ARM_USE_OIDC: true
+      
+#3 in apply.yaml
+
+
+      - name: Plan Terraform deployment
+        id: terraform-plan
+        shell: bash
+        run: |
+          if [[ ${{ github.event_name }} == 'workflow_dispatch' && ${{ github.event.inputs.destroy || 'false' }} == 'true' ]]; 
+          then
+            echo "Executing terraform plan --destroy "
+            terraform plan --destroy
+          else
+            echo "Executing terraform plan"
+            terraform plan
+          fi
+        working-directory:       ${{ steps.concatenate.outputs.terraformdirectory }}
+        env:
+          ARM_CLIENT_ID:       ${{ secrets.ARM_CLIENT_ID }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+          ARM_TENANT_ID:       ${{ secrets.ARM_TENANT_ID }}
+          ARM_CLIENT_SECRET:  ${{ secrets.ARM_CLIENT_SECRET }}
+          ARM_USE_OIDC: true
+
+#4 in main yaml file
+on:
+  workflow_dispatch:
+  inputs:
+    destroy:
+      description: 'destroyplan'
+      required: false
+      default: false
+
+  plancall:
+    if: github.event_name == 'pull_request' || github.event.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
+    needs: [build]
+    uses: vinayprakash893/azure-terraform-actions-reusable/.github/workflows/plan.yaml@main
+    with:
+      environment: dev
+      terraform_directory: ""
+      artifact-name: art-vny-1
+      destroy: ${{ github.event.inputs.destroy || 'false' }}
+      #destroy: ${{ github.event.inputs.destroy }}
+    secrets: inherit
+
+      
+  applycall:
+    name: Deploy to Production
+    if: github.event.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
+    needs: [plancall]
+    uses: vinayprakash893/azure-terraform-actions-reusable/.github/workflows/apply.yaml@main
+    with:
+      environment: production
+      terraform_directory: ""
+      artifact-name: art-vny-1
+      destroy: ${{ github.event.inputs.destroy || 'false' }}
+      #destroy: ${{ github.event.inputs.destroy }}
+    secrets: inherit

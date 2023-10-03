@@ -67,7 +67,7 @@ jobs:
         id: terraform-plan
         shell: bash
         run: |
-          if [[ ${{ github.event_name }} == 'workflow_dispatch' && ${{ github.event.inputs.destroy }} == 'true' ]]; 
+          if [[ ${{ github.event_name }} == 'workflow_dispatch' && ${{ github.event.inputs.destroy || 'false' }} == 'true' ]]; 
           then
             echo "Executing terraform plan --destroy "
             terraform plan --destroy
@@ -82,7 +82,7 @@ jobs:
           ARM_TENANT_ID:       ${{ secrets.ARM_TENANT_ID }}
           ARM_CLIENT_SECRET:  ${{ secrets.ARM_CLIENT_SECRET }}
           ARM_USE_OIDC: true
-          
+
       # - name: Test
       #   run: |
       #     curl -X POST https://api.github.com/repos/vinayprakash893/azure-tf-self-service/dispatches \
