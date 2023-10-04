@@ -1,0 +1,35 @@
+# terrafrom to check if plan has nay chnages then only do the apply
+
+# in plan.yaml reusable framework
+      - name: Terraform Plan
+        id: terraform-plan
+        shell: bash
+        run: |
+          plan_output=$(terraform plan -detailed-exitcode 2>&1)
+          if [[ $plan_output == *"No changes."* ]]; then
+            echo "No changes to deploy."
+            echo "::set-output name=changes::false"
+          else
+            echo "Changes detected, plan created."
+            echo "::set-output name=changes::true"
+          fi
+        working-directory:       ${{ steps.concatenate.outputs.terraformdirectory }}
+        env:
+          ARM_CLIENT_ID:       ${{ secrets.ARM_CLIENT_ID }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+          ARM_TENANT_ID:       ${{ secrets.ARM_TENANT_ID }}
+          ARM_CLIENT_SECRET:  ${{ secrets.ARM_CLIENT_SECRET }}
+          ARM_USE_OIDC: true
+
+
+# in apply.yaml
+
+      - name: Terraform Apply
+        id: terraform-apply
+        if: ${{ inputs.plan-changes == 'true' }}
+        run: terraform apply #terraform-plan.tfout
+        working-directory:       ${{ steps.concatenate.outputs.terraformdirectory }}
+        env:
+          ARM_CLIENT_ID:       ${{ secrets.ARM_CLIENT_ID  }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+          ARM_TENANT_ID:       ${{ secrets.ARM_TENANT_ID }}

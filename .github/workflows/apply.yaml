@@ -104,86 +104,86 @@ jobs:
       #     -u ${{ secrets.ACTIONS_KEY }} \
       #     --data '{ "event_type": "detail-log", "client_payload": { "repository": "'"$GITHUB_REPOSITORY"'","filename": "'${{ steps.terraform-apply.outcome }}'"}}'
 
-      - uses: actions/github-script@v6
-        if: github.event_name == 'pull_request'
-        with:
-          github-token: ${{ secrets.REPO_SCOPED_TOKEN }}
-          script: |
-            // 1. Retrieve existing bot comments for the PR
-            const { data: comments } = await github.rest.issues.listComments({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: context.issue.number,
-            })
-            const botComment = comments.find(comment => {
-              return comment.user.type === 'Bot' && comment.body.includes('Terraform Format and Style')
-            })
+      # - uses: actions/github-script@v6
+      #   if: github.event_name == 'pull_request'
+      #   with:
+      #     github-token: ${{ secrets.REPO_SCOPED_TOKEN }}
+      #     script: |
+      #       // 1. Retrieve existing bot comments for the PR
+      #       const { data: comments } = await github.rest.issues.listComments({
+      #         owner: context.repo.owner,
+      #         repo: context.repo.repo,
+      #         issue_number: context.issue.number,
+      #       })
+      #       const botComment = comments.find(comment => {
+      #         return comment.user.type === 'Bot' && comment.body.includes('Terraform Format and Style')
+      #       })
 
-            // 2. Prepare format of the comment
-            const output = `#### Terraform Format and Style 🖌\`${{ steps.fmt.outcome }}\`
-            #### Terraform Initialization ⚙️\`${{ steps.terraform-init.outputs.init-status }}\`
-            #### Check Terraform state file 🔎:  \`${{ steps.terraform-init.outputs.state-check }}\`
-            #### Terraform Validation 🤖\`$${{ steps.validate.outcome }}\`
-            <details><summary>Validation Output</summary>
+      #       // 2. Prepare format of the comment
+      #       const output = `#### Terraform Format and Style 🖌\`${{ steps.fmt.outcome }}\`
+      #       #### Terraform Initialization ⚙️\`${{ steps.terraform-init.outputs.init-status }}\`
+      #       #### Check Terraform state file 🔎:  \`${{ steps.terraform-init.outputs.state-check }}\`
+      #       #### Terraform Validation 🤖\`$${{ steps.validate.outcome }}\`
+      #       <details><summary>Validation Output</summary>
 
-            \`\`\`\n
-            ${{ steps.validate.outputs.stdout }}
-            \`\`\`
+      #       \`\`\`\n
+      #       ${{ steps.validate.outputs.stdout }}
+      #       \`\`\`
 
-            </details>
+      #       </details>
 
-            *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`, Working Directory: \`${{ steps.concatenate.outputs.terraformdirectory  }}\`, Workflow: \`${{ github.workflow }}\`*`;
+      #       *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`, Working Directory: \`${{ steps.concatenate.outputs.terraformdirectory  }}\`, Workflow: \`${{ github.workflow }}\`*`;
 
-            // 3. If we have a comment, update it, otherwise create a new one
-            if (botComment) {
-              github.rest.issues.updateComment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                comment_id: botComment.id,
-                body: output
-              })
-            } else {
-              github.rest.issues.createComment({
-                issue_number: context.issue.number,
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                body: output
-              })
-            }
+      #       // 3. If we have a comment, update it, otherwise create a new one
+      #       if (botComment) {
+      #         github.rest.issues.updateComment({
+      #           owner: context.repo.owner,
+      #           repo: context.repo.repo,
+      #           comment_id: botComment.id,
+      #           body: output
+      #         })
+      #       } else {
+      #         github.rest.issues.createComment({
+      #           issue_number: context.issue.number,
+      #           owner: context.repo.owner,
+      #           repo: context.repo.repo,
+      #           body: output
+      #         })
+      #       }
 
-      - name: get the comment-message
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        env:
-            MESSGE: ${{ github.event.head_commit.message }}
-        run: |
-          echo Merge Message is: $MESSGE
-          number=$(echo $MESSGE | grep -oP 'pull request #\K\d+'|| true)
-          if [ -z "$number" ]; then
-              echo "No pull request number found."
-              PR_Number=''
-              echo "PR_Number=$PR_Number" >> $GITHUB_ENV
-          else
-              echo "Pull request number: $number"
-              PR_Number=$number
-              echo "PR_Number=$PR_Number" >> $GITHUB_ENV
-          fi
-          exit 0
+      # - name: get the comment-message
+      #   if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+      #   env:
+      #       MESSGE: ${{ github.event.head_commit.message }}
+      #   run: |
+      #     echo Merge Message is: $MESSGE
+      #     number=$(echo $MESSGE | grep -oP 'pull request #\K\d+'|| true)
+      #     if [ -z "$number" ]; then
+      #         echo "No pull request number found."
+      #         PR_Number=''
+      #         echo "PR_Number=$PR_Number" >> $GITHUB_ENV
+      #     else
+      #         echo "Pull request number: $number"
+      #         PR_Number=$number
+      #         echo "PR_Number=$PR_Number" >> $GITHUB_ENV
+      #     fi
+      #     exit 0
       
-      - name: print commit number
-        if: env.PR_Number != ''
-        run: |
-          echo "$PR_Number"
+      # - name: print commit number
+      #   if: env.PR_Number != ''
+      #   run: |
+      #     echo "$PR_Number"
         
-      - name: Add comment message in PR
-        if: env.PR_Number != ''
-        uses: actions/github-script@v6
-        with:
-          github-token: ${{ secrets.REPO_SCOPED_TOKEN }}
-          script: |
-            const prNumber = process.env.PR_Number;
-            github.rest.issues.createComment({
-              issue_number: prNumber,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: 'Main branch comment'
-            })
+      # - name: Add comment message in PR
+      #   if: env.PR_Number != ''
+      #   uses: actions/github-script@v6
+      #   with:
+      #     github-token: ${{ secrets.REPO_SCOPED_TOKEN }}
+      #     script: |
+      #       const prNumber = process.env.PR_Number;
+      #       github.rest.issues.createComment({
+      #         issue_number: prNumber,
+      #         owner: context.repo.owner,
+      #         repo: context.repo.repo,
+      #         body: 'Main branch comment'
+      #       })
