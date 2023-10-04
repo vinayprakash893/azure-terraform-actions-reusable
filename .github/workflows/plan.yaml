@@ -121,6 +121,7 @@ jobs:
           else
             echo "Changes detected, plan created."
             echo "::set-output name=changes::true"
+            echo "changes=true" >> "$GITHUB_ENV"
           fi
         working-directory:       ${{ steps.concatenate.outputs.terraformdirectory }}
         env:
@@ -129,6 +130,7 @@ jobs:
           ARM_TENANT_ID:       ${{ secrets.ARM_TENANT_ID }}
           ARM_CLIENT_SECRET:  ${{ secrets.ARM_CLIENT_SECRET }}
           ARM_USE_OIDC: true
+
 
 
       # - uses: actions/github-script@v6
