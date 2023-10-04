@@ -23,6 +23,12 @@
 
 
 # in apply.yaml
+on:
+  workflow_call:
+    inputs:
+      plan-changes:
+        required: false
+        type: string
 
       - name: Terraform Apply
         id: terraform-apply
