@@ -13,7 +13,7 @@ on:
         required: true
         type: string
       plan-changes:
-        required: false
+        required: true
         type: string
     
     secrets:
@@ -32,7 +32,6 @@ jobs:
   terraform-apply:
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
-
     steps:
       - name: Dump GitHub context
         env:
@@ -62,9 +61,6 @@ jobs:
       - name: all variables
         run:  env
       
-      - name: all vars
-        run:  vars
-
       - name: Download Artifacts
         id: download
         uses: actions/download-artifact@v2
@@ -74,7 +70,10 @@ jobs:
 
       - name: Terraform Directory Path
         id: concatenate
-        run: echo "terraformdirectory=${{ steps.download.outputs.download-path }}/${{ inputs.terraform_directory }}" >> $GITHUB_OUTPUT   
+        run: |
+          echo "terraformdirectory=${{ steps.download.outputs.download-path }}/${{ inputs.terraform_directory }}" >> $GITHUB_OUTPUT
+          echo "priniting plan-chnages value"
+          echo "${{ inputs.plan-changes }}"
   
       #TERRAFORM COMMANDS
       - name: Terraform Initialization

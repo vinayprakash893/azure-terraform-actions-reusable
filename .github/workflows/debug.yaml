@@ -39,8 +39,6 @@ jobs:
       - name: all variables
         run:  env
       
-      - name: all vars
-        run:  vars
       # - name: get the comment-message
       #   env:
       #       MESSGE: ${{ github.event.commits[0].message }}
