@@ -114,11 +114,10 @@ jobs:
         id: terraform-plan
         shell: bash
         run: |
-          terraform plan -detailed-exitcode -out=terraform-plan.tfout 2>&1 | tee terraform-plan-output.txt
-          if [[ ${PIPESTATUS[0]} == 2 ]]; then
+          plan_output=$(terraform plan -detailed-exitcode 2>&1)
+          if [[ $plan_output == *"No changes."* ]]; then
             echo "No changes to deploy."
             echo "::set-output name=changes::false"
-            exit 0
           else
             echo "Changes detected, plan created."
             echo "::set-output name=changes::true"
