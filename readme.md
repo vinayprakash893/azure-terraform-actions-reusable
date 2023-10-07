@@ -18,7 +18,7 @@ To use this reusable framework for your GitHub workflow, follow these steps:
 
    - `jobs`: Define the individual jobs that make up your workflow. Each job can use different actions, parameters, and secrets as discussed below.
 
-4. **Customize the jobs**: Customize the jobs within the workflow according to your requirements. In the sample YAML file, you'll find three jobs: `Validating`, `Plan`, and `Apply`. These jobs use external actions and specify input parameters and secrets. Look for the Worflow Explanation below for each jobs usage 
+4. **Customize the jobs**: Customize the jobs within the workflow according to your requirements. In the sample YAML file, you'll find three jobs: `Validating`, `Plan`, and `Apply`. These jobs use external actions and specify input parameters and secrets. Look for the Workflow Explanation below for each jobs usage 
 
 5. **Secrets**: Make sure to set up the necessary secrets in your repository's GitHub Secrets settings. Replace the references to secrets in your YAML file with the correct secret names.
 
@@ -35,9 +35,9 @@ Here's a brief explanation of the jobs included in the resuable YAML files:
 - `Apply`: `terraform-apply.yaml` This job applies the Terraform changes but only if the trigger event is a push to the `main` branch.
 
 ## Github Federated Credentials
-The below changes are used if you are using Github Federated Credntials for Azure:
+The below changes are used if you are using Github Federated Credentials for Azure:
 
-- This will use the Github autentication mode to use Azure fedrated creantials which avoids using Azure Secrets rotation..
+- This will use the Github authentication mode to use Azure federated credentials which avoids using Azure Secrets rotation..
   ```
   ARM_USE_OIDC: true
   ```
