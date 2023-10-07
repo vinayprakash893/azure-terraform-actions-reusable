@@ -4,11 +4,11 @@ This repository provides a reusable framework for creating GitHub Actions workfl
 
 ## How to Use
 
-To use this reusable framework for your GitHub Actions workflow, follow these steps:
+To use this reusable framework for your GitHub workflow, follow these steps:
 
 1. **Create a YAML file for your workflow**: Start by creating a YAML file in your repository's `.github/workflows` directory. You can give the file any name you like, such as `my-custom-workflow.yml`.
 
-2. **Copy the framework code**: Copy the content from the framework YAML file provided in this repository. You can customize it to fit your specific workflow requirements.
+2. **Copy the framework code**: Copy the content from the framework YAML file provided in this repository. You can customize it to fit your specific workflow requirements. refer below sample code as needed.
 
 3. **Configure the workflow**: Update the workflow configuration to match your project's needs. In the sample YAML file provided in this repository, you'll find the following key sections:
 
@@ -16,9 +16,9 @@ To use this reusable framework for your GitHub Actions workflow, follow these st
 
    - `permissions`: Define the required permissions for the workflow. Adjust the permissions as necessary for your project.
 
-   - `jobs`: Define the individual jobs that make up your workflow. Each job can use different actions, parameters, and secrets.
+   - `jobs`: Define the individual jobs that make up your workflow. Each job can use different actions, parameters, and secrets as discussed below.
 
-4. **Customize the jobs**: Customize the jobs within the workflow according to your requirements. In the sample YAML file, you'll find three jobs: `Validating`, `Plan`, and `Apply`. These jobs use external actions and specify input parameters and secrets.
+4. **Customize the jobs**: Customize the jobs within the workflow according to your requirements. In the sample YAML file, you'll find three jobs: `Validating`, `Plan`, and `Apply`. These jobs use external actions and specify input parameters and secrets. Look for the Worflow Explanation below for each jobs usage 
 
 5. **Secrets**: Make sure to set up the necessary secrets in your repository's GitHub Secrets settings. Replace the references to secrets in your YAML file with the correct secret names.
 
@@ -26,13 +26,21 @@ To use this reusable framework for your GitHub Actions workflow, follow these st
 
 ## Workflow Explanation
 
-Here's a brief explanation of the jobs included in the sample YAML file:
+Here's a brief explanation of the jobs included in the resuable YAML files:
 
-- `Validating`: This job validates your infrastructure code using Terraform. It uses an external action and passes parameters and secrets to it.
+- `Validating`: `terraform-build.yaml` This job validates your infrastructure code using Terraform. It uses an external action and passes parameters and secrets to it.
 
-- `Plan`: This job creates an execution plan for your Terraform infrastructure changes.
+- `Plan`: `terraform-plan.yaml`This job creates an execution plan for your Terraform infrastructure changes.
 
-- `Apply`: This job applies the Terraform changes but only if the trigger event is a push to the `main` branch.
+- `Apply`: `terraform-apply.yaml` This job applies the Terraform changes but only if the trigger event is a push to the `main` branch.
+
+## Github Federated Credentials
+The below changes are used if you are using Github Federated Credntials for Azure:
+
+- This will use the Github autentication mode to use Azure fedrated creantials which avoids using Azure Secrets rotation..
+  ```
+  ARM_USE_OIDC: true
+  ```
 
 ## Additional Information
 
@@ -45,7 +53,7 @@ Here's a brief explanation of the jobs included in the sample YAML file:
 By following these steps, you can quickly set up and customize GitHub Actions workflows for your projects using this reusable framework.
 
 
-# Sampel Code
+# Sample Code
 
 ```
  
@@ -83,6 +91,7 @@ jobs:
       AZURE_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
       AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
       AZURE_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
+      #ARM_USE_OIDC: true
     secrets: inherit
       
   Plan:
