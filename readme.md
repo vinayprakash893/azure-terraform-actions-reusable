@@ -83,7 +83,7 @@ permissions:
 jobs:
   Validating:
     name: Validate
-    uses: CeridianCloud/iac-github-workflow-templates/.github/workflows/terraform-build.yaml@fix
+    uses: xxxxxxxxxxxx/iac-github-workflow-templates/.github/workflows/terraform-build.yaml@main
     with:
       environment: dev
       terraform_directory: 'keyvault/example'
@@ -97,7 +97,7 @@ jobs:
   Plan:
     name: Plan
     needs: [Validating]
-    uses: CeridianCloud/iac-github-workflow-templates/.github/workflows/terraform-plan.yaml@fix
+    uses: xxxxxxxxxxx/iac-github-workflow-templates/.github/workflows/terraform-plan.yaml@main
     with:
       environment: dev
       terraform_directory: ""
@@ -111,7 +111,7 @@ jobs:
     name: Apply
     if: github.event.ref == 'refs/heads/main'
     needs: [Plan]
-    uses: CeridianCloud/iac-github-workflow-templates/.github/workflows/terraform-apply.yaml@fix
+    uses: xxxxxxxxxxx/iac-github-workflow-templates/.github/workflows/terraform-apply.yaml@main
     with:
       environment: production
       terraform_directory: ""
