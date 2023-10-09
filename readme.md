@@ -1,4 +1,5 @@
 # Reusable GitHub Actions Workflow Framework
+![GitHub Actions](https://img.shields.io/badge/github%20actions-%232671E5.svg?style=for-the-badge&logo=githubactions&logoColor=white)
 
 This repository provides a reusable framework for creating GitHub Actions workflows using YAML. This framework is designed to simplify the setup of common workflows, making it easier to automate your development and deployment processes.
 
@@ -122,3 +123,4 @@ jobs:
     secrets: inherit
 
 ```
+![Static Badge](https://img.shields.io/badge/Language-YAML-blue)
