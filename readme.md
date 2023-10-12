@@ -55,18 +55,18 @@ By following these steps, you can quickly set up and customize GitHub Actions wo
 
 
 # Sample Code
-# [ ] to replace the required values in the yaml file 
+# << >> to replace the required values in the yaml file 
 
 ```
-name: [Add the name of the workflow here]
+name: <<Add the name of the workflow here>>
 on: 
   push:
     paths:
-      - ['keyvault/example/**']  # provide the path of the resource tf files which execute when merged to main branch 
+      - <<'keyvault/example/**'>>  # provide the path of the resource tf files which execute when merged to main branch 
     branches: [ main ]
   pull_request:
     paths:
-      - ['keyvault/example/**']  # provide the path of the resource tf files which execute when pushed to feature branch 
+      - <<>'keyvault/example/**'>>  # provide the path of the resource tf files which execute when pushed to feature branch 
     branches: [ main ]
   workflow_dispatch:
     inputs:
@@ -87,12 +87,12 @@ jobs:
     name: Validate
     uses: xxxxxxxxxxxx/iac-github-workflow-templates/.github/workflows/terraform-build.yaml@main
     with:
-      environment: dev                                          # Provide the environment
-      terraform_directory: 'keyvault/example'
-      artifact-name: keyvault
-      AZURE_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
-      AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
-      AZURE_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
+      environment: <<dev>>                                        # Provide the environment
+      terraform_directory: <<'keyvault/example'>>                 # provide the path of the tf resource
+      artifact-name: <<keyvault>>                                 # resource name 
+      AZURE_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}                # Azure client ID will be taken from github variables 
+      AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}    # Azure Sub ID will be taken from github variables 
+      AZURE_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}                # Azure Tenant ID will be taken from github variables 
       #ARM_USE_OIDC: true
     secrets: inherit
       
@@ -101,9 +101,9 @@ jobs:
     needs: [Validating]
     uses: xxxxxxxxxxx/iac-github-workflow-templates/.github/workflows/terraform-plan.yaml@main
     with:
-      environment: dev
+      environment: <<dev >>                                         # Provide the environment
       terraform_directory: ""
-      artifact-name: keyvault
+      artifact-name: <<keyvault>>                                   # resource name 
       AZURE_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
       AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
       AZURE_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
@@ -115,9 +115,9 @@ jobs:
     needs: [Plan]
     uses: xxxxxxxxxxx/iac-github-workflow-templates/.github/workflows/terraform-apply.yaml@main
     with:
-      environment: production
+      environment: production                                        # Provide the environment
       terraform_directory: ""
-      artifact-name: keyvault
+      artifact-name: keyvault                                        # resource name 
       AZURE_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
       AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
       AZURE_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
