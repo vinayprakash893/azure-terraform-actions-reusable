@@ -27,7 +27,7 @@ To use this reusable framework for your GitHub workflow, follow these steps:
 
 ## Workflow Explanation
 
-Here's a brief explanation of the jobs included in the resuable YAML files:
+Here's a brief explanation of the jobs included in the reusable YAML files:
 
 - `Validating`: `terraform-build.yaml` This job validates your infrastructure code using Terraform. It uses an external action and passes parameters and secrets to it.
 
