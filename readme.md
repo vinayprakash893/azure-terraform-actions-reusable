@@ -55,17 +55,18 @@ By following these steps, you can quickly set up and customize GitHub Actions wo
 
 
 # Sample Code
+# [ ] to replace the required values in the yaml file 
 
 ```
- 
+name: [Add the name of the workflow here]
 on: 
   push:
     paths:
-      - 'keyvault/example/**' 
+      - ['keyvault/example/**']  # provide the path of the resource tf files which execute when merged to main branch 
     branches: [ main ]
   pull_request:
     paths:
-      - 'keyvault/example/**'
+      - ['keyvault/example/**']  # provide the path of the resource tf files which execute when pushed to feature branch 
     branches: [ main ]
   workflow_dispatch:
     inputs:
@@ -86,7 +87,7 @@ jobs:
     name: Validate
     uses: xxxxxxxxxxxx/iac-github-workflow-templates/.github/workflows/terraform-build.yaml@main
     with:
-      environment: dev
+      environment: dev                                          # Provide the environment
       terraform_directory: 'keyvault/example'
       artifact-name: keyvault
       AZURE_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
