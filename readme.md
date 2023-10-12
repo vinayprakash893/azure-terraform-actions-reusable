@@ -66,7 +66,7 @@ on:
     branches: [ main ]
   pull_request:
     paths:
-      - <<>'keyvault/example/**'>>  # provide the path of the resource tf files which execute when pushed to feature branch 
+      - <<'keyvault/example/**'>>  # provide the path of the resource tf files which execute when pushed to feature branch 
     branches: [ main ]
   workflow_dispatch:
     inputs:
