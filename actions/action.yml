@@ -28,6 +28,7 @@ runs:
       with:
         #terraform_version: ${{ inputs.terraform-version}}
         cli_config_credentials_token: ${{ inputs.cli_token}}
+        TF_CLI_CONFIG_FILE: ${{ github.workspace }}/.terraformrc
     
     # - name: Login to Terraform Cloud
     #   id: login
