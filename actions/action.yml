@@ -29,12 +29,19 @@ runs:
         #terraform_version: ${{ inputs.terraform-version}}
         cli_config_credentials_token: ${{ inputs.cli_token}}
         TF_CLI_CONFIG_FILE: ${{ github.workspace }}/.terraformrc
-        
+
     - name: Set up Node.js
       uses: actions/setup-node@v2
       with:
         node-version: '16'
-    
+
+    - name: Setup terrafromrc
+      id: initialization
+      shell: bash
+      run: |
+        echo 'credentials "app.terraform.io" { token = "${{ secrets.TF_API_TOKEN }}" }' > ${{ env.HOME }}/.terraformrc
+        cat ${{ env.HOME }}/.terraformrc
+
     # - name: Login to Terraform Cloud
     #   id: login
     #   shell: bash
