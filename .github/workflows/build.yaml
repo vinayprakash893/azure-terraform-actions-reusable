@@ -56,6 +56,11 @@ jobs:
       - name: all variables
         run:  env
 
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+          
       - name: Terraform Directory Path
         id: concatenate
         run: echo "terraformdirectory=${{ github.workspace }}/${{ inputs.terraform_directory }}" >> $GITHUB_OUTPUT   
