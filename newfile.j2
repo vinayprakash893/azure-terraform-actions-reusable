@@ -1,0 +1,9 @@
+        continue-on-error: true
+        run: |
+          ls -la 
+          echo "-------------"
+          ls -la ${{github.run_id}}
+          echo "-------------"
+          ls -la ${{github.run_id}}/mycode/
+          echo "-------------"
+          ls -la ${{github.run_id}}/reusable/
