@@ -312,7 +312,7 @@ jobs:
       #     --data '{ "event_type": "detail-log", "client_payload": { "repository": "'"$GITHUB_REPOSITORY"'","filename": "'${{ steps.validate.outcome }}'"}}'
 
       - name: Add failed message in PR
-        if: env.PR_Number != ''
+        if: ${{ failure() }}
         uses: actions/github-script@v6
         # env:
         #   APPLY: "terraform\n${{ steps.terraform-apply.outputs.stdout }}"
