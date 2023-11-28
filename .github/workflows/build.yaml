@@ -345,8 +345,4 @@ jobs:
                 repo: context.repo.repo,
                 body: 'failed'
               })
-            } 
-            
-            else {
-              console.log('No Issue or Pull Request associated with this event.');
-            }
+            } else { console.log('No Issue or Pull Request associated with this event.'); }
