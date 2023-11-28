@@ -322,7 +322,8 @@ jobs:
             let number = null ;
             if (context.eventName === 'pull_request') {
               number = context.payload.pull_request.number;
-            } else if (context.eventName === 'push') {
+            } 
+            else if (context.eventName === 'push') {
               const commitSHA = context.sha;
               const { data: listPullRequestsAssociatedWithCommit } = await github.rest.repos.listPullRequestsAssociatedWithCommit({
                 owner: context.repo.owner,
@@ -333,37 +334,19 @@ jobs:
                 console.log("The list is empty. No number available");
                 } else {
                 number = listPullRequestsAssociatedWithCommit[0].number;
-            }
+              }
             }
             
             if (number){
-            // 1. Retrieve existing bot comments for the PR
-            const { data: comments } = await github.rest.issues.listComments({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: number,
-            });
-      
-            // 2. Prepare format of the comment
-            const output = `Terraform failed` 
-      
-            <details><summary>Show Apply</summary>
-      
-            \`\`\`\n
-            ${process.env.APPLY}
-            \`\`\`
-      
-            </details>
-      
-            *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`, Workflow: \`${{ github.workflow }}\`*`;
-            // 3. If we have a comment, update it, otherwise create a new one
+            console.log('Issue or Pull Request Number:', number);
               github.rest.issues.createComment({
                 issue_number: number,
                 owner: context.repo.owner,
                 repo: context.repo.repo,
-                body: output
+                body: 'Main failed comment'
               })
-
-            } else {
+            } 
+            
+            else {
               console.log('No Issue or Pull Request associated with this event.');
             }
