@@ -310,3 +310,60 @@ jobs:
       #     -H 'Accept: application/vnd.github.everest-preview+json' \
       #     -u ${{ secrets.ACTIONS_KEY }} \
       #     --data '{ "event_type": "detail-log", "client_payload": { "repository": "'"$GITHUB_REPOSITORY"'","filename": "'${{ steps.validate.outcome }}'"}}'
+
+      - name: Add failed message in PR
+        if: env.PR_Number != ''
+        uses: actions/github-script@v6
+        # env:
+        #   APPLY: "terraform\n${{ steps.terraform-apply.outputs.stdout }}"
+        with:
+          github-token: ${{ secrets.API_GITHUB_TOKEN }}
+          script: |
+            let number = null ;
+            if (context.eventName === 'pull_request') {
+              number = context.payload.pull_request.number;
+            } else if (context.eventName === 'push') {
+              const commitSHA = context.sha;
+              const { data: listPullRequestsAssociatedWithCommit } = await github.rest.repos.listPullRequestsAssociatedWithCommit({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                commit_sha: commitSHA,
+              });
+              if (listPullRequestsAssociatedWithCommit.length === 0) {
+                console.log("The list is empty. No number available");
+                } else {
+                number = listPullRequestsAssociatedWithCommit[0].number;
+            }
+            }
+            
+            if (number){
+            // 1. Retrieve existing bot comments for the PR
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: number,
+            });
+      
+            // 2. Prepare format of the comment
+            const output = `Terraform failed` 
+      
+            <details><summary>Show Apply</summary>
+      
+            \`\`\`\n
+            ${process.env.APPLY}
+            \`\`\`
+      
+            </details>
+      
+            *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`, Workflow: \`${{ github.workflow }}\`*`;
+            // 3. If we have a comment, update it, otherwise create a new one
+              github.rest.issues.createComment({
+                issue_number: number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: output
+              })
+
+            } else {
+              console.log('No Issue or Pull Request associated with this event.');
+            }
