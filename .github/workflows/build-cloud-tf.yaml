@@ -6,13 +6,13 @@ on:
       cloud-tf:
         description: 'cloud or not'
         required: false
-        default: false
+
   workflow_call:
     inputs:
       cloud-tf:
-        required: true
+        required: false
         type: boolean
-        default: false
+
     
     secrets:
       ARM_CLIENT_ID :
