@@ -6,7 +6,7 @@ on:
       cloud-tf:
         required: false
         type: boolean
-        default: no
+        default: false
     
     secrets:
       ARM_CLIENT_ID :
