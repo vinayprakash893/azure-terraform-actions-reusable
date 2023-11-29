@@ -4,7 +4,7 @@ on:
   workflow_call:
     inputs:
       cloud-tf:
-        required: false
+        required: true
         type: boolean
         default: false
     
