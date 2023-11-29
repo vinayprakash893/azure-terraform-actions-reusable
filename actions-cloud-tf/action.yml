@@ -5,6 +5,7 @@ inputs:
   cloud-tf:
     required: false
     type: boolean
+    default: false
 
 runs:
   using: "composite"
@@ -15,13 +16,13 @@ runs:
       run: |
         echo "value= ${{ inputs.cloud-tf }}"
     - name: terraform cloud
-      if: ${{ !inputs.cloud-tf }}
+      if: ${{ inputs.cloud-tf == true }}
       shell: bash
       run: |
         echo "terrafrom-cloud-one"
 
     - name: terraform free
-      if: ${{ inputs.cloud-tf }}
+      if: ${{ inputs.cloud-tf == false }}
       shell: bash
       run: |
         echo "terrafrom-free-one"
