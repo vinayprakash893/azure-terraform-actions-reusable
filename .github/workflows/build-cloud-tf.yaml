@@ -1,6 +1,7 @@
 name: terraform-build-cloud-tf
 
 on:
+  workflow_dispatch:
   workflow_call:
     inputs:
       cloud-tf:
