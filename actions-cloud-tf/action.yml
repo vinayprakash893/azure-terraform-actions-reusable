@@ -2,10 +2,6 @@ name: 'Terraform Initialization'
 description: 'Install and Initialization of Terraform'
 
 inputs:
-  terraform-version:
-    required: false
-    type: string
-    default: 1.4.3
   cloud-tf:
     required: false
     type: boolean
@@ -25,6 +21,3 @@ runs:
       shell: bash
       run: |
         echo "terrafrom-free-one"
-
-
-        
