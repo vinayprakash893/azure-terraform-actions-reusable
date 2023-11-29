@@ -1,0 +1,39 @@
+name: terraform-build
+
+on:
+  workflow_call:
+    inputs:
+      cloud-tf:
+        required: false
+        type: boolean
+        default: no
+    
+    secrets:
+      ARM_CLIENT_ID :
+        required: true
+      ARM_SUBSCRIPTION_ID:
+        required: true
+      ARM_TENANT_ID:
+        required: true
+      token:
+        required: true
+
+            
+jobs:
+  terraform-validate:
+    runs-on: ubuntu-latest
+    #environment: ${{ inputs.environment }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          repository: 'vinayprakash893/azure-terraform-actions-reusable'
+          ref: main
+          #token: ${{ secrets.API_GITHUB_TOKEN }}
+          path: 'reusable-workflows-path'
+
+      - name: Terraform Initialization
+        id: terraform-init
+        uses: ./reusable-workflows-path/actions-cloud-tf
+        with:
+          cloud-tf: ${{ inputs.cloud-tf }}

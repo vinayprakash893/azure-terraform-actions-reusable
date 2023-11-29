@@ -1,0 +1,30 @@
+name: 'Terraform Initialization'
+description: 'Install and Initialization of Terraform'
+
+inputs:
+  terraform-version:
+    required: false
+    type: string
+    default: 1.4.3
+  cloud-tf:
+    required: false
+    type: boolean
+    default: false
+
+runs:
+  using: "composite"
+  steps: 
+    - name: terraform cloud
+      if: ${{ cloud-tf }}
+      shell: bash
+      run: |
+        echo "terrafrom-clone-one"
+
+    - name: terraform free
+      if: ${{ !cloud-tf }}
+      shell: bash
+      run: |
+        echo "terrafrom-free-one"
+
+
+        
