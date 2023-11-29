@@ -2,6 +2,11 @@ name: terraform-build-cloud-tf
 
 on:
   workflow_dispatch:
+    inputs:
+      cloud-tf:
+        description: 'cloud or not'
+        required: false
+        default: false
   workflow_call:
     inputs:
       cloud-tf:
@@ -37,4 +42,4 @@ jobs:
         id: terraform-init
         uses: ./reusable-workflows-path/actions-cloud-tf
         with:
-          cloud-tf: ${{ inputs.cloud-tf }}
+          cloud-tf: ${{ github.event.inputs.cloud-tf }}
