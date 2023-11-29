@@ -42,4 +42,4 @@ jobs:
         id: terraform-init
         uses: ./reusable-workflows-path/actions-cloud-tf
         with:
-          cloud-tf: ${{ github.event.inputs.cloud-tf }}
+          cloud-tf: ${{ inputs.cloud-tf }}
