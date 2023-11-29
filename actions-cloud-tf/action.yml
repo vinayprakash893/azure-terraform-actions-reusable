@@ -16,10 +16,10 @@ runs:
       run: |
         echo "value= ${{ inputs.cloud-tf }}"
     - name: terraform cloud
-      if: ${{ inputs.cloud-tf }}
+      if: ${{ !inputs.cloud-tf }}
       shell: bash
       run: |
-        echo "terrafrom-clone-one"
+        echo "terrafrom-cloud-one"
 
     - name: terraform free
       if: ${{ inputs.cloud-tf }}
