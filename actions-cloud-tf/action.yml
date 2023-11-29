@@ -9,15 +9,20 @@ inputs:
 
 runs:
   using: "composite"
-  steps: 
-    - name: terraform cloud
-      if: ${{ cloud-tf }}
+  steps:
+    - name: Initialization Output
+      id: initialization
       shell: bash
       run: |
-        echo "terrafrom-clone-one"
+        echo "cloud-tf=${{ inputs.cloud-tf }}"
+    # - name: terraform cloud
+    #   if: ${{ cloud-tf }}
+    #   shell: bash
+    #   run: |
+    #     echo "terrafrom-clone-one"
 
-    - name: terraform free
-      if: ${{ cloud-tf }}
-      shell: bash
-      run: |
-        echo "terrafrom-free-one"
+    # - name: terraform free
+    #   if: ${{ cloud-tf }}
+    #   shell: bash
+    #   run: |
+    #     echo "terrafrom-free-one"
