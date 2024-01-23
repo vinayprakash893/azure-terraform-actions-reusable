@@ -1,0 +1,348 @@
+name: terraform-build
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
+      terraform_directory:
+        required: true
+        type: string
+      artifact-name:
+        required: true
+        type: string
+      jira-key:
+        required: false
+        type: string
+      ARM_CLIENT_ID:
+        required: false
+        type: string
+      destroy:
+        required: false
+        type: string
+    
+    secrets:
+      ARM_CLIENT_ID :
+        required: true
+      ARM_SUBSCRIPTION_ID:
+        required: true
+      ARM_TENANT_ID:
+        required: true
+      token:
+        required: true
+
+            
+jobs:
+  terraform-validate:
+    runs-on: ubuntu-latest
+    #environment: ${{ inputs.environment }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      
+      # - name: make comment
+      #   uses: dkershner6/post-api-call-action@v1
+      #   with:
+      #     url: https://automation.atlassian.com/pro/hooks/7e0c8982c6766ee66128b036964ae062592d1a69
+      #     data: '{"issues":["${{ inputs.jira-key }}"], "data": {"releaseVersion":"starting"}}'
+      #     #headers: "{\"Authorization\": \"Bearer ${{ secrets.API_KEY }}\"}"
+      #     params: "{\"content\": \"Test Content\"}"
+      - name: Dump GitHub context
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+        run: echo "$GITHUB_CONTEXT"
+      - name: Dump job context
+        env:
+          JOB_CONTEXT: ${{ toJson(job) }}
+        run: echo "$JOB_CONTEXT"
+      - name: Dump steps context
+        env:
+          STEPS_CONTEXT: ${{ toJson(steps) }}
+        run: echo "$STEPS_CONTEXT"
+      - name: Dump runner context
+        env:
+          RUNNER_CONTEXT: ${{ toJson(runner) }}
+        run: echo "$RUNNER_CONTEXT"
+      - name: Dump strategy context
+        env:
+          STRATEGY_CONTEXT: ${{ toJson(strategy) }}
+        run: echo "$STRATEGY_CONTEXT"
+      - name: Dump matrix context
+        env:
+          MATRIX_CONTEXT: ${{ toJson(matrix) }}
+        run: echo "$MATRIX_CONTEXT"
+      
+      - name: all variables
+        run:  env
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+
+      - name: Terraform Directory Path
+        id: concatenate
+        run: echo "terraformdirectory=${{ github.workspace }}/${{ inputs.terraform_directory }}" >> $GITHUB_OUTPUT   
+      
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{ inputs.artifact-name }}
+          path: ${{ steps.concatenate.outputs.terraformdirectory }}
+          
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          repository: 'vinayprakash893/azure-terraform-actions-reusable'
+          ref: main
+          #token: ${{ secrets.API_GITHUB_TOKEN }}
+          path: 'reusable-workflows-path'
+      
+      - name: shell
+        run:  |
+          env
+          ls -l
+          pwd
+
+      #TERRAFORM COMMANDS
+      - name: Terraform Initialization
+        id: terraform-init
+        uses: ./reusable-workflows-path/actions
+        with:
+          working-directory: ${{ steps.concatenate.outputs.terraformdirectory }}
+          cli_token: ${{ secrets.TF_API_TOKEN }}
+        env:
+          #ARM_CLIENT_ID:       ${{ inputs.ARM_CLIENT_ID }}
+          ARM_CLIENT_ID:       ${{ secrets.ARM_CLIENT_ID }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+          ARM_TENANT_ID:       ${{ secrets.ARM_TENANT_ID }}
+          ARM_CLIENT_SECRET:  ${{ secrets.ARM_CLIENT_SECRET }}
+
+      - name: shell2
+        run:  |
+          env
+          ls -l
+          pwd
+
+      - name: Terraform fmt
+        id: fmt
+        run: terraform fmt -check
+        continue-on-error: true
+      
+      - name: Validate Terraform code
+        id: validate
+        shell: bash
+        run: terraform validate 
+        working-directory: ${{ steps.concatenate.outputs.terraformdirectory }}
+
+      # - name: Npm install
+      #   run: npm install axios
+
+      # - name: Plan Terraform deployment
+      #   if: github.event_name == 'workflow_dispatch' &&  github.event.inputs.destroy == 'true'
+      #   id: terraform-plan-destroy
+      #   #run: terraform plan -no-color -out=tfplan
+      #   run: terraform plan --destroy
+      #   working-directory:       ${{ steps.concatenate.outputs.terraformdirectory }}
+      #   env:
+      #     ARM_CLIENT_ID:       ${{ secrets.ARM_CLIENT_ID }}
+      #     ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+      #     ARM_TENANT_ID:       ${{ secrets.ARM_TENANT_ID }}
+      #     ARM_CLIENT_SECRET:  ${{ secrets.ARM_CLIENT_SECRET }}
+      #     ARM_USE_OIDC: true
+
+      # - name: Plan Terraform deployment
+      #   id: terraform-plan
+      #   shell: bash
+      #   run: |
+      #     if [[ ${{ github.event_name }} == 'workflow_dispatch' && ${{ github.event.inputs.destroy || 'false' }} == 'true' ]]; 
+      #     then
+      #       echo "Executing terraform plan --destroy "
+      #       terraform plan --destroy
+      #     else
+      #       echo "Executing terraform plan"
+      #       terraform plan
+      #     fi
+      #   working-directory:       ${{ steps.concatenate.outputs.terraformdirectory }}
+      #   env:
+      #     ARM_CLIENT_ID:       ${{ secrets.ARM_CLIENT_ID }}
+      #     ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+      #     ARM_TENANT_ID:       ${{ secrets.ARM_TENANT_ID }}
+      #     ARM_CLIENT_SECRET:  ${{ secrets.ARM_CLIENT_SECRET }}
+      #     ARM_USE_OIDC: true
+
+      - name : Print Title of PR
+        env:
+            TITLE: ${{ github.event.pull_request.title }}
+        run: echo The Title of your PR is $TITLE
+      
+      - uses: actions/github-script@v6
+        if: github.event_name == 'pull_request'
+        with:
+          github-token: ${{ secrets.REPO_SCOPED_TOKEN }}
+          script: |
+            // 1. Retrieve existing bot comments for the PR
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            })
+            const botComment = comments.find(comment => {
+              return comment.user.type === 'Bot' && comment.body.includes('Terraform Format and Style')
+            })
+
+            // 2. Prepare format of the comment
+            const output = `#### Terraform Format and Style 🖌\`${{ steps.fmt.outcome }}\`
+            #### Terraform Initialization ⚙️\`${{ steps.terraform-init.outputs.init-status }}\`
+            #### Check Terraform state file 🔎:  \`${{ steps.terraform-init.outputs.state-check }}\`
+            #### Terraform Validation 🤖\`$${{ steps.validate.outcome }}\`
+            <details><summary>Validation Output</summary>
+
+            \`\`\`\n
+            ${{ steps.validate.outputs.stdout }}
+            \`\`\`
+
+            </details>
+
+            *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`, Working Directory: \`${{ steps.concatenate.outputs.terraformdirectory  }}\`, Workflow: \`${{ github.workflow }}\`*`;
+
+            // 3. If we have a comment, update it, otherwise create a new one
+            if (botComment) {
+              github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: botComment.id,
+                body: output
+              })
+            } else {
+              github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: output
+              })
+            }
+
+            // const axios = require('axios');
+
+            // const url = 'https://automation.atlassian.com/pro/hooks/7e0c8982c6766ee66128b036964ae062592d1a69'; // Replace with the actual target URL
+
+            // const data = {
+            //   "issues": ["ISM1-10"],
+            //   "data": {
+            //     "releaseVersion": output
+            //   }
+            // };
+
+            // const headers = {
+            //   "Content-Type": "application/json"
+            // };
+
+            // axios.post(url, data, { headers })
+            //   .then(response => {
+            //     console.log('Response:', response.data);
+            //   })
+            //   .catch(error => {
+            //     console.error('Error:', error);
+            //   });
+      
+      - name: get the comment-message
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        env:
+            MESSGE: ${{ github.event.head_commit.message }}
+        run: |
+          echo Merge Message is: $MESSGE
+          number=$(echo $MESSGE | grep -oP 'pull request #\K\d+'|| true)
+          if [ -z "$number" ]; then
+              echo "No pull request number found."
+              PR_Number=''
+              echo "PR_Number=$PR_Number" >> $GITHUB_ENV
+          else
+              echo "Pull request number: $number"
+              PR_Number=$number
+              echo "PR_Number=$PR_Number" >> $GITHUB_ENV
+          fi
+          exit 0
+      
+      - name: print commit number
+        if: env.PR_Number != ''
+        run: |
+          echo "$PR_Number"
+        
+      - name: Add comment message in PR
+        if: env.PR_Number != ''
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.REPO_SCOPED_TOKEN }}
+          script: |
+            const prNumber = process.env.PR_Number;
+            github.rest.issues.createComment({
+              issue_number: prNumber,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: 'Main branch comment'
+            })
+
+      # - name: write file
+      #   uses: actions/github-script@v6
+      #   if: github.event_name == 'pull_request'
+      #   with:
+      #     github-token: ${{ secrets.GITHUB_TOKEN }}
+      #     script: |
+      #       echo "hellobuildfile" >> file.txt
+      # - name: diaplay all
+      #   run: | 
+      #     echo "'${{ steps.validate.outcome }}'"
+      #     echo "${{ steps.terraform-init.outputs.init-status }}"
+      #     echo "${{ steps.validate.outputs.stdout }}"
+      # - name: make comment
+      #   uses: dkershner6/post-api-call-action@v1
+      #   with:
+      #     url: https://automation.atlassian.com/pro/hooks/7e0c8982c6766ee66128b036964ae062592d1a69
+      #     data: '{"issues":["${{ inputs.jira-key }}"], "data": {"releaseVersion":"${{ steps.terraform-init.outcome }}"}}'
+      #     #headers: "{\"Authorization\": \"Bearer ${{ secrets.API_KEY }}\"}"
+      #     params: "{\"content\": \"Test Content\"}"
+
+      # - name: Test
+      #   run: |
+      #     curl -X POST https://api.github.com/repos/vinayprakash893/azure-tf-self-service/dispatches \
+      #     -H 'Accept: application/vnd.github.everest-preview+json' \
+      #     -u ${{ secrets.ACTIONS_KEY }} \
+      #     --data '{ "event_type": "detail-log", "client_payload": { "repository": "'"$GITHUB_REPOSITORY"'","filename": "'${{ steps.validate.outcome }}'"}}'
+
+      - name: Add failed message in PR
+        if: ${{ failure() }}
+        uses: actions/github-script@v6
+        # env:
+        #   APPLY: "terraform\n${{ steps.terraform-apply.outputs.stdout }}"
+        with:
+          github-token: ${{ secrets.REPO_SCOPED_TOKEN }}
+          script: |
+            let number = null ;
+            if (context.eventName === 'pull_request') {
+              number = context.payload.pull_request.number;
+            } 
+            else if (context.eventName === 'push') {
+              const commitSHA = context.sha;
+              const { data: listPullRequestsAssociatedWithCommit } = await github.rest.repos.listPullRequestsAssociatedWithCommit({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                commit_sha: commitSHA,
+              });
+              if (listPullRequestsAssociatedWithCommit.length === 0) {
+                console.log("The list is empty. No number available");
+                } else {
+                number = listPullRequestsAssociatedWithCommit[0].number;
+              }
+            }
+            
+            if (number){
+            console.log('Issue or Pull Request Number:', number);
+              github.rest.issues.createComment({
+                issue_number: number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: 'failed'
+              })
+            } else { console.log('No Issue or Pull Request associated with this event.'); }
