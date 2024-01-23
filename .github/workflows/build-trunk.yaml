@@ -182,6 +182,7 @@ jobs:
           else
             echo "Changes detected, plan created."
             echo "::set-output name=changes::true"
+            echo "::set-output name=plan_output_var::$plan_output"
             echo "changes=true" >> "$GITHUB_ENV"
           fi
         working-directory:       ${{ steps.concatenate.outputs.terraformdirectory }}
@@ -196,7 +197,9 @@ jobs:
       - name : Print Title of PR
         env:
             TITLE: ${{ github.event.pull_request.title }}
-        run: echo The Title of your PR is $TITLE
+        run: |
+          echo The Title of your PR is $TITLE 
+          echo $plan_output_var
       
       - uses: actions/github-script@v6
         if: github.event_name == 'pull_request'
