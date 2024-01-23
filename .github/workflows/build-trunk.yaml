@@ -201,7 +201,6 @@ jobs:
 
       
       - uses: actions/github-script@v6
-        if: github.event_name == 'pull_request'
         with:
           github-token: ${{ secrets.REPO_SCOPED_TOKEN }}
           script: |
@@ -226,7 +225,7 @@ jobs:
             console.log('Files in the current directory:', fileList);
             
             // 2. Prepare format of the comment
-            const plan_file = fs.readFileSync('file.out', 'utf8')
+            const plan_file = fs.readFileSync('${{ steps.concatenate.outputs.terraformdirectory }}/file.out', 'utf8')
             const plan = plan_file.length > 65000 ? plan_file.toString().substring(0, 65000) + " ..." : plan_file
             const output = `#### Terraform Format and Style 🖌\`${{ steps.fmt.outcome }}\`
             #### Terraform Initialization ⚙️\`${{ steps.terraform-init.outputs.init-status }}\`
@@ -259,5 +258,5 @@ jobs:
                 body: output
               })
             }
-      
+
       
