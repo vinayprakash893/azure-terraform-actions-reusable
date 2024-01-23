@@ -182,7 +182,6 @@ jobs:
           else
             echo "Changes detected, plan created."
             echo "::set-output name=changes::true"
-            echo "::set-output name=plan_output_var::$plan_output"
             echo "changes=true" >> "$GITHUB_ENV"
             echo "plan_output_var=$plan_output" >> "$GITHUB_ENV"
           fi
