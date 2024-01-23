@@ -176,6 +176,9 @@ jobs:
         shell: bash
         run: |
           plan_output=$(terraform plan -detailed-exitcode 2>&1)
+          echo "start plan"
+          echo "$plan_output" > file.out
+          echo "end plan"
           if [[ $plan_output == *"No changes."* ]]; then
             echo "No changes to deploy."
             echo "::set-output name=changes::false"
@@ -184,9 +187,6 @@ jobs:
             echo "::set-output name=changes::true"
             echo "changes=true" >> "$GITHUB_ENV"
           fi
-          echo "start plan"
-          echo "plan_output=$plan_output" >> "$GITHUB_ENV"
-          echo "end plan"
         working-directory:       ${{ steps.concatenate.outputs.terraformdirectory }}
         env:
           ARM_CLIENT_ID:       ${{ secrets.ARM_CLIENT_ID }}
