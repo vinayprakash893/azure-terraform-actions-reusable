@@ -39,7 +39,7 @@ runs:
       id: rc-setup
       shell: bash
       run: |
-        echo 'credentials "app.terraform.io" { token = "${{ secrets.TF_API_TOKEN }}" }' > ${{ runner.workspace }}/.terraformrc
+        echo 'credentials "app.terraform.io" { token = "${{ inputs.cli_token}}" }' > ${{ runner.workspace }}/.terraformrc
         cat ${{ runner.workspace }}/.terraformrc
 
     # - name: Login to Terraform Cloud
