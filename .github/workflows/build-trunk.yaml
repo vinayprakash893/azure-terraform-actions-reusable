@@ -184,6 +184,7 @@ jobs:
             echo "::set-output name=changes::true"
             echo "::set-output name=plan_output_var::$plan_output"
             echo "changes=true" >> "$GITHUB_ENV"
+            echo "plan_output_var=$plan_output" >> "$GITHUB_ENV"
           fi
         working-directory:       ${{ steps.concatenate.outputs.terraformdirectory }}
         env:
