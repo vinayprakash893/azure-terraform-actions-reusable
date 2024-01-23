@@ -218,7 +218,7 @@ jobs:
             #### Terraform Initialization ⚙️\`${{ steps.terraform-init.outputs.init-status }}\`
             #### Check Terraform state file 🔎:  \`${{ steps.terraform-init.outputs.state-check }}\`
             #### Terraform Validation 🤖\`$${{ steps.validate.outcome }}\`
-            <details><summary>Validation Output</summary>
+            <details><summary>Plan Output</summary>
 
             \`\`\`\n
             ${{ steps.terraform-plan.outputs.stdout }}
