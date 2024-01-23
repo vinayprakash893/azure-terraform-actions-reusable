@@ -226,7 +226,8 @@ jobs:
             
             // 2. Prepare format of the comment
             const plan_file = fs.readFileSync('${{ steps.concatenate.outputs.terraformdirectory }}/file.out', 'utf8')
-            const plan = plan_file.length > 65000 ? plan_file.toString().substring(plan_file.length - 65000) + " ..." : plan_file
+            const plan1 = plan_file.length > 65000 ? plan_file.toString().substring(0, 65000) + " ..." : plan_file
+            const plan2 = plan_file.length > 130000 ? plan_file.toString().substring(65000, 130000) + " ..." : plan1
             const output = `#### Terraform Format and Style 🖌\`${{ steps.fmt.outcome }}\`
             #### Terraform Initialization ⚙️\`${{ steps.terraform-init.outputs.init-status }}\`
             #### Check Terraform state file 🔎:  \`${{ steps.terraform-init.outputs.state-check }}\`
@@ -235,6 +236,7 @@ jobs:
 
             \`\`\`\n
             ${plan}
+            ${plan1}
             \`\`\`
             
             </details>
