@@ -171,7 +171,28 @@ jobs:
       #     ARM_TENANT_ID:       ${{ secrets.ARM_TENANT_ID }}
       #     ARM_CLIENT_SECRET:  ${{ secrets.ARM_CLIENT_SECRET }}
       #     ARM_USE_OIDC: true
+      - name: Terraform Plan
+        id: terraform-plan
+        shell: bash
+        run: |
+          plan_output=$(terraform plan -detailed-exitcode 2>&1)
+          if [[ $plan_output == *"No changes."* ]]; then
+            echo "No changes to deploy."
+            echo "::set-output name=changes::false"
+          else
+            echo "Changes detected, plan created."
+            echo "::set-output name=changes::true"
+            echo "changes=true" >> "$GITHUB_ENV"
+          fi
+        working-directory:       ${{ steps.concatenate.outputs.terraformdirectory }}
+        env:
+          ARM_CLIENT_ID:       ${{ secrets.ARM_CLIENT_ID }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+          ARM_TENANT_ID:       ${{ secrets.ARM_TENANT_ID }}
+          ARM_CLIENT_SECRET:  ${{ secrets.ARM_CLIENT_SECRET }}
+          ARM_USE_OIDC: true
 
+          
       - name : Print Title of PR
         env:
             TITLE: ${{ github.event.pull_request.title }}
@@ -200,7 +221,7 @@ jobs:
             <details><summary>Validation Output</summary>
 
             \`\`\`\n
-            ${{ steps.validate.outputs.stdout }}
+            ${{ steps.terraform-plan.outputs.stdout }}
             \`\`\`
 
             </details>
