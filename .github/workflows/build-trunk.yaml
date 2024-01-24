@@ -232,7 +232,7 @@ jobs:
       
             \`\`\`\n
             for (let j = 0; j < chunks.length; j++) {
-              ${chunks[j]
+              ${chunks[j]}
             }
             \`\`\`
       
