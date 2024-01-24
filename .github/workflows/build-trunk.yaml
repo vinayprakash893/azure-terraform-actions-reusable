@@ -146,7 +146,7 @@ jobs:
       - name: Plan Terraform deployment
         id: terraform-plan
         run: |
-          terraform plan -detailed-exitcode -input=false -no-color
+          terraform plan -detailed-exitcode -input=false -no-color > tfplan.out
           # if [[ ${{ inputs.terraform-cloud }} == false ]]; then
           #   if [[ ${{ github.event_name }} == 'workflow_dispatch' && ${{ github.event.inputs.destroy || 'false' }} == 'true' ]];  
           #   then 
@@ -158,7 +158,7 @@ jobs:
           #   fi 
           # else
           #   echo "Executing terraform plan cloud"
-          #   terraform plan -detailed-exitcode -input=false -no-color
+          #   terraform plan -detailed-exitcode -input=false -no-color > tfplan.out
           # fi
         working-directory:       ${{ steps.concatenate.outputs.terraformdirectory }}
         env:
@@ -214,13 +214,16 @@ jobs:
               issue_number: number,
             });
             // 2. Prepare format of the comment
-            let fullout = ${{ steps.terraform-plan.outputs.stdout }}
+            const plan_file = fs.readFileSync('${{ steps.concatenate.outputs.terraformdirectory }}/tfplan.out', 'utf8')
+            const plan = plan_file.length > 65000 ? plan_file.toString().substring(0, 65000) + " ..." : plan_file
+            const plan1 = plan_file.length > 130000 ? plan_file.toString().substring(65000, 130000) + " ..." : plan
             const output = `#### Terraform Plan 📖\`${{ steps.terraform-plan.outcome }}\`
       
             <details><summary>Show Plan</summary>
       
             \`\`\`\n
-            
+            ${plan}
+            ${plan1}
             \`\`\`
       
             </details>
