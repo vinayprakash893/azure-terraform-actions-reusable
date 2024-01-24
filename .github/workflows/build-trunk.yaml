@@ -216,8 +216,7 @@ jobs:
             // 2. Prepare format of the comment
             const { execSync } = require('child_process');
             const fs = require('fs');
-            const planFilePath = `${steps.concatenate.outputs.terraformdirectory}/tfplan.out`;
-            const plan_file = fs.readFileSync(planFilePath, 'utf8');
+            const plan_file = fs.readFileSync('${{ steps.concatenate.outputs.terraformdirectory }}/tfplan.out', 'utf8')
             const chunkSize = 65000;
             const chunks = [];
             for (let i = 0; i < plan_file.length; i += chunkSize) {
