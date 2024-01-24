@@ -235,7 +235,6 @@ jobs:
             ${chunks[1]} || "."
             ${chunks[2]} || "."
             ${chunks[3]} || "."
-            ${chunks[4]} || "."
             \`\`\`
       
             </details>
