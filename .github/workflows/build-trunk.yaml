@@ -187,7 +187,7 @@ jobs:
         env:
           PLAN: "terraform\n${{ steps.terraform-plan.outputs.stdout }}"
         with:
-          github-token: ${{ secrets.API_GITHUB_TOKEN }}
+          github-token: ${{ secrets.REPO_SCOPED_TOKEN }}
           script: |
             let number = null ;
             if (context.eventName === 'pull_request') {
