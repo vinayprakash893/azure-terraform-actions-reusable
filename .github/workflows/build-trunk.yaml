@@ -184,8 +184,8 @@ jobs:
           path: ${{ steps.concatenate.outputs.terraformdirectory }}/tfplan          
 
       - uses: actions/github-script@v6
-        env:
-          PLAN: "terraform\n${{ steps.terraform-plan.outputs.stdout }}"
+        # env:
+        #   PLAN: "terraform\n${{ steps.terraform-plan.outputs.stdout }}"
         with:
           github-token: ${{ secrets.REPO_SCOPED_TOKEN }}
           script: |
