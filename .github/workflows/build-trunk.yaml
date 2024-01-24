@@ -231,9 +231,11 @@ jobs:
             <details><summary>Show Plan</summary>
       
             \`\`\`\n
-            for (let j = 0; j < chunks.length; j++) {
-              ${chunks[j]}
-            }
+            ${chunks[0]} || "."
+            ${chunks[1]} || "."
+            ${chunks[2]} || "."
+            ${chunks[3]} || "."
+            ${chunks[4]} || "."
             \`\`\`
       
             </details>
