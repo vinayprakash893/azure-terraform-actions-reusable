@@ -214,12 +214,13 @@ jobs:
               issue_number: number,
             });
             // 2. Prepare format of the comment
+            const plan = process.env.PLAN.length > 65000 ? process.env.PLAN.toString().substring(0, 65000) + " ..." : "...."
             const output = `#### Terraform Plan 📖\`${{ steps.terraform-plan.outcome }}\`
       
             <details><summary>Show Plan</summary>
       
             \`\`\`\n
-            ${process.env.PLAN}
+            ${plan}
             \`\`\`
       
             </details>
