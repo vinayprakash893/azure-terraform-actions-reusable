@@ -231,10 +231,10 @@ jobs:
             <details><summary>Show Plan</summary>
       
             \`\`\`\n
-            ${chunks[0]} || "."
-            ${chunks[1]} || "."
-            ${chunks[2]} || "."
-            ${chunks[3]} || "."
+            ${chunks[0]}
+            ${chunks[1]}
+            ${chunks[2]}
+            ${chunks[3]}
             \`\`\`
       
             </details>
