@@ -214,12 +214,13 @@ jobs:
               issue_number: number,
             });
             // 2. Prepare format of the comment
+            let fullout = ${{ steps.terraform-plan.outputs.stdout }}
             const output = `#### Terraform Plan 📖\`${{ steps.terraform-plan.outcome }}\`
       
             <details><summary>Show Plan</summary>
       
             \`\`\`\n
-            ${{ steps.terraform-plan.outputs.stdout }}
+            
             \`\`\`
       
             </details>
