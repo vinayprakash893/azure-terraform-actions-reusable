@@ -225,6 +225,13 @@ jobs:
             for (let i = 0; i < plan_file.length; i += chunkSize) {
               chunks.push(plan_file.substring(i, i + chunkSize));
             }
+            const myout = '
+            ${chunks[0]}
+            ${chunks[1]}
+            ${chunks[2]}
+            ${chunks[3]}
+            ${chunks[4]}
+            ';
             const output = `#### Terraform Plan 📖\`${{ steps.terraform-plan.outcome }}\`
       
             <details><summary>Show Plan</summary>
@@ -241,9 +248,9 @@ jobs:
       
             *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`, Working Directory: \`${{ steps.concatenate.outputs.terraformdirectory  }}\`, Workflow: \`${{ github.workflow }}\`*`;
             const totalCharacters = plan_file.length;
-            console.log(`Total number of characters: ${totalCharacters}`);
+            console.log(`Total number of TF plan characters: ${totalCharacters}`);
             const totalLines = plan_file.split('\n').length;
-            console.log(`Total number of lines: ${totalLines}`);
+            console.log(`Total number of TF plan lines: ${totalLines}`);
             const totaloutchar = output.length;
             console.log(`Total number of output characters: ${totaloutchar}`);
             const totaloutLines = output.split('\n').length;
@@ -253,7 +260,7 @@ jobs:
                 issue_number: number,
                 owner: context.repo.owner,
                 repo: context.repo.repo,
-                body: output
+                body: myout
               })
 
             } else {
