@@ -146,7 +146,7 @@ jobs:
       - name: Plan Terraform deployment
         id: terraform-plan
         run: |
-          terraform plan -detailed-exitcode -input=false -no-color > tfplan.out
+          terraform plan -detailed-exitcode -input=false -no-color | tee tfplan.out
           #plan_output=$(terraform plan -detailed-exitcode -input=false -no-color)
           #echo "plan_output" > tfplan.out
           # if [[ ${{ inputs.terraform-cloud }} == false ]]; then
@@ -160,7 +160,7 @@ jobs:
           #   fi 
           # else
           #   echo "Executing terraform plan cloud"
-          #   terraform plan -detailed-exitcode -input=false -no-color > tfplan.out
+          #   terraform plan -detailed-exitcode -input=false -no-color | tee tfplan.out
           # fi
         working-directory:       ${{ steps.concatenate.outputs.terraformdirectory }}
         env:
