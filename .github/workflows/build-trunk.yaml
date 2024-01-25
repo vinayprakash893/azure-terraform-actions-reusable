@@ -218,10 +218,7 @@ jobs:
             const { execSync } = require('child_process');
             const fs = require('fs');
             const plan_file = fs.readFileSync('${{ steps.concatenate.outputs.terraformdirectory }}/tfplan.out', 'utf8')
-            const totalCharacters = plan_file.length;
-            console.log(`Total number of characters: ${totalCharacters}`);
-            const totalLines = plan_file.split('\n').length;
-            console.log(`Total number of lines: ${totalLines}`);
+            
             const chunkSize = 65000;
             const chunks = [];
             for (let i = 0; i < plan_file.length; i += chunkSize) {
@@ -241,6 +238,14 @@ jobs:
             </details>
       
             *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`, Working Directory: \`${{ steps.concatenate.outputs.terraformdirectory  }}\`, Workflow: \`${{ github.workflow }}\`*`;
+            const totalCharacters = plan_file.length;
+            console.log(`Total number of characters: ${totalCharacters}`);
+            const totalLines = plan_file.split('\n').length;
+            console.log(`Total number of lines: ${totalLines}`);
+            const totaloutchar = plan_file.length;
+            console.log(`Total number of output characters: ${totaloutchar}`);
+            const totaloutLines = plan_file.split('\n').length;
+            console.log(`Total number of output lines: ${totaloutLines}`);
             // 3. If we have a comment, update it, otherwise create a new one
               github.rest.issues.createComment({
                 issue_number: number,
