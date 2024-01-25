@@ -146,8 +146,9 @@ jobs:
       - name: Plan Terraform deployment
         id: terraform-plan
         run: |
-          plan_output=$(terraform plan -detailed-exitcode -input=false -no-color)
-          echo "plan_output" > tfplan.out
+          terraform plan -detailed-exitcode -input=false -no-color > tfplan.out
+          #plan_output=$(terraform plan -detailed-exitcode -input=false -no-color)
+          #echo "plan_output" > tfplan.out
           # if [[ ${{ inputs.terraform-cloud }} == false ]]; then
           #   if [[ ${{ github.event_name }} == 'workflow_dispatch' && ${{ github.event.inputs.destroy || 'false' }} == 'true' ]];  
           #   then 
