@@ -225,13 +225,13 @@ jobs:
             for (let i = 0; i < plan_file.length; i += chunkSize) {
               chunks.push(plan_file.substring(i, i + chunkSize));
             }
-            const myout = '
+            const myout = `
             ${chunks[0]}
             ${chunks[1]}
             ${chunks[2]}
             ${chunks[3]}
             ${chunks[4]}
-            ';
+            `;
             const output = `#### Terraform Plan 📖\`${{ steps.terraform-plan.outcome }}\`
       
             <details><summary>Show Plan</summary>
