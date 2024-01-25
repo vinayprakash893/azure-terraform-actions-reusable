@@ -219,7 +219,7 @@ jobs:
             const { execSync } = require('child_process');
             const fs = require('fs');
             const plan_file = fs.readFileSync('${{ steps.concatenate.outputs.terraformdirectory }}/tfplan.out', 'utf8')
-            const name = plan_file.toString().substring(0 - 130000)
+            const name = plan_file.toString().substring(0 - 66000)
             const chunkSize = 65000;
             const chunks = [];
             for (let i = 0; i < plan_file.length; i += chunkSize) {
