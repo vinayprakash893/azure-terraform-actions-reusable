@@ -253,7 +253,7 @@ jobs:
             // 3. If we have a comment, update it, otherwise create a new one
             const myout2 = ["comment1", "comment2", "comment3"]; 
             for (const comment of chunks) {
-              const commentBody = #### Terraform Plan 📖\`${{ steps.terraform-plan.outcome }}\`
+              const commentBody = `#### Terraform Plan 📖\`${{ steps.terraform-plan.outcome }}\`
       
               <details><summary>Show Plan</summary>
         
