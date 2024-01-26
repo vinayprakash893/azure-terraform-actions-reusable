@@ -219,17 +219,33 @@ jobs:
             const { execSync } = require('child_process');
             const fs = require('fs');
             const plan_file = fs.readFileSync('${{ steps.concatenate.outputs.terraformdirectory }}/tfplan.out', 'utf8')
+            const name = plan_file.toString().substring(0 - 66000)
             const chunkSize = 65000;
             const chunks = [];
             for (let i = 0; i < plan_file.length; i += chunkSize) {
               chunks.push(plan_file.substring(i, i + chunkSize));
-              await github.rest.issues.createComment({
-                issue_number: number,
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                body: chunks[i] });
             }
-
+            const myout = `
+            ${chunks[0]}
+            ${chunks[1]}
+            ${chunks[2]}
+            ${chunks[3]}
+            ${chunks[4]}
+            `;
+            const output = `#### Terraform Plan 📖\`${{ steps.terraform-plan.outcome }}\`
+      
+            <details><summary>Show Plan</summary>
+      
+            \`\`\`\n
+            ${chunks[0]}
+            ${chunks[1]}
+            ${chunks[2]}
+            ${chunks[3]}
+            \`\`\`
+      
+            </details>
+      
+            *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`, Working Directory: \`${{ steps.concatenate.outputs.terraformdirectory  }}\`, Workflow: \`${{ github.workflow }}\`*`;
             const totalCharacters = plan_file.length;
             console.log(`Total number of TF plan characters: ${totalCharacters}`);
             const totalLines = plan_file.split('\n').length;
@@ -241,8 +257,30 @@ jobs:
             console.log(`Total number of myout characters: ${myout.length}`);
             console.log(`Total number of myout lines: ${myout.split('\n').length}`);
             // 3. If we have a comment, update it, otherwise create a new one
-            
-            else {
+            const myout2 = ["comment1", "comment2", "comment3"]; 
+            for (const comment of chunks) {
+              const commentBody = `#### Terraform Format and Style 🖌\`${{ steps.fmt.outcome }}\`
+              #### Terraform Initialization ⚙️\`${{ steps.terraform-init.outputs.init-status }}\`
+              #### Check Terraform state file 🔎:  \`${{ steps.terraform-init.outputs.state-check }}\`
+              #### Terraform Validation 🤖\`$${{ steps.validate.outcome }}\`
+              <details><summary>Show Plan</summary>
+
+              \`\`\`\n
+              ${comment}
+              \`\`\`
+
+              </details>
+
+              *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`, Working Directory: \`${{ steps.concatenate.outputs.terraformdirectory  }}\`, Workflow: \`${{ github.workflow }}\`*`;
+              await github.rest.issues.createComment({
+                issue_number: number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: commentBody
+              });
+            }
+
+            } else {
               console.log('No Issue or Pull Request associated with this event.');
             }
 
