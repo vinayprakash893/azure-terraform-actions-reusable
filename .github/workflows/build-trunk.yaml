@@ -253,16 +253,19 @@ jobs:
             const totaloutchar = output.length;
             console.log(`Total number of output characters: ${totaloutchar}`);
             const totaloutLines = output.split('\n').length;
-            console.log(`Total number of output lines: ${totaloutLines}`);
+            console.log(`Total number of output lines: ${totaloutLines}`);        
             console.log(`Total number of myout characters: ${myout.length}`);
             console.log(`Total number of myout lines: ${myout.split('\n').length}`);
             // 3. If we have a comment, update it, otherwise create a new one
-            github.rest.issues.createComment({
-              issue_number: number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: myout
-            })
+            const myout2 = ["comment1", "comment2", "comment3"]; 
+            for (const comment of myout2) {
+              await github.rest.issues.createComment({
+                issue_number: number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: comment
+              });
+            }
 
             } else {
               console.log('No Issue or Pull Request associated with this event.');
