@@ -259,6 +259,13 @@ jobs:
             // 3. If we have a comment, update it, otherwise create a new one
             const myout2 = ["comment1", "comment2", "comment3"]; 
             for (const comment of chunks) {
+              const commentBody = `
+              <details><summary>Show Plan</summary>
+
+              # \`\`\`
+              # \`\`\`
+
+              </details>`;
               await github.rest.issues.createComment({
                 issue_number: number,
                 owner: context.repo.owner,
