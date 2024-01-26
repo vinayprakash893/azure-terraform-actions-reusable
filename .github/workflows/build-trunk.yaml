@@ -224,20 +224,8 @@ jobs:
             const chunks = [];
             for (let i = 0; i < plan_file.length; i += chunkSize) {
               chunks.push(plan_file.substring(i, i + chunkSize));
-              await github.rest.issues.createComment({
-                issue_number: number,
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                body: chunks[i]
-              });
             }
-            const myout = `
-            ${chunks[0]}
-            ${chunks[1]}
-            ${chunks[2]}
-            ${chunks[3]}
-            ${chunks[4]}
-            `;
+          
             const output = `#### Terraform Plan 📖\`${{ steps.terraform-plan.outcome }}\`
       
             <details><summary>Show Plan</summary>
@@ -265,12 +253,10 @@ jobs:
             // 3. If we have a comment, update it, otherwise create a new one
             const myout2 = ["comment1", "comment2", "comment3"]; 
             for (const comment of chunks) {
-              const commentBody = `#### Terraform Format and Style 🖌\`${{ steps.fmt.outcome }}\`
-              #### Terraform Initialization ⚙️\`${{ steps.terraform-init.outputs.init-status }}\`
-              #### Check Terraform state file 🔎:  \`${{ steps.terraform-init.outputs.state-check }}\`
-              #### Terraform Validation 🤖\`$${{ steps.validate.outcome }}\`
+              const commentBody = #### Terraform Plan 📖\`${{ steps.terraform-plan.outcome }}\`
+      
               <details><summary>Show Plan</summary>
-
+        
               \`\`\`\n
               ${comment}
               \`\`\`
@@ -282,7 +268,7 @@ jobs:
                 issue_number: number,
                 owner: context.repo.owner,
                 repo: context.repo.repo,
-                body: myout2
+                body: commentBody
               });
             }
 
