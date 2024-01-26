@@ -254,14 +254,14 @@ jobs:
             console.log(`Total number of output characters: ${totaloutchar}`);
             const totaloutLines = output.split('\n').length;
             console.log(`Total number of output lines: ${totaloutLines}`);
-            console.log(`Total number of output characters: ${myout.length}`);
-            console.log(`Total number of output lines: ${myout.split('\n').length}`);
+            console.log(`Total number of myout characters: ${myout.length}`);
+            console.log(`Total number of myout lines: ${myout.split('\n').length}`);
             // 3. If we have a comment, update it, otherwise create a new one
               github.rest.issues.createComment({
                 issue_number: number,
                 owner: context.repo.owner,
                 repo: context.repo.repo,
-                body: name
+                body: output
               })
 
             } else {
