@@ -274,3 +274,372 @@ jobs:
               console.log('No Issue or Pull Request associated with this event.');
             }
 
+####
+name: terraform-build
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
+      terraform_directory:
+        required: true
+        type: string
+      artifact-name:
+        required: true
+        type: string
+      jira-key:
+        required: false
+        type: string
+      ARM_CLIENT_ID:
+        required: false
+        type: string
+      destroy:
+        required: false
+        type: string
+    
+    secrets:
+      ARM_CLIENT_ID :
+        required: true
+      ARM_SUBSCRIPTION_ID:
+        required: true
+      ARM_TENANT_ID:
+        required: true
+      token:
+        required: true
+
+            
+jobs:
+  terraform-validate:
+    runs-on: ubuntu-latest
+    #environment: ${{ inputs.environment }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      
+      # - name: make comment
+      #   uses: dkershner6/post-api-call-action@v1
+      #   with:
+      #     url: https://automation.atlassian.com/pro/hooks/7e0c8982c6766ee66128b036964ae062592d1a69
+      #     data: '{"issues":["${{ inputs.jira-key }}"], "data": {"releaseVersion":"starting"}}'
+      #     #headers: "{\"Authorization\": \"Bearer ${{ secrets.API_KEY }}\"}"
+      #     params: "{\"content\": \"Test Content\"}"
+      - name: Dump GitHub context
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+        run: echo "$GITHUB_CONTEXT"
+      - name: Dump job context
+        env:
+          JOB_CONTEXT: ${{ toJson(job) }}
+        run: echo "$JOB_CONTEXT"
+      - name: Dump steps context
+        env:
+          STEPS_CONTEXT: ${{ toJson(steps) }}
+        run: echo "$STEPS_CONTEXT"
+      - name: Dump runner context
+        env:
+          RUNNER_CONTEXT: ${{ toJson(runner) }}
+        run: echo "$RUNNER_CONTEXT"
+      - name: Dump strategy context
+        env:
+          STRATEGY_CONTEXT: ${{ toJson(strategy) }}
+        run: echo "$STRATEGY_CONTEXT"
+      - name: Dump matrix context
+        env:
+          MATRIX_CONTEXT: ${{ toJson(matrix) }}
+        run: echo "$MATRIX_CONTEXT"
+      
+      - name: all variables
+        run:  env
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+
+      - name: Terraform Directory Path
+        id: concatenate
+        run: echo "terraformdirectory=${{ github.workspace }}/${{ inputs.terraform_directory }}" >> $GITHUB_OUTPUT   
+      
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{ inputs.artifact-name }}
+          path: ${{ steps.concatenate.outputs.terraformdirectory }}
+          
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          repository: 'vinayprakash893/azure-terraform-actions-reusable'
+          ref: main
+          #token: ${{ secrets.API_GITHUB_TOKEN }}
+          path: 'reusable-workflows-path'
+      
+      - name: shell
+        run:  |
+          env
+          ls -l
+          pwd
+
+      #TERRAFORM COMMANDS
+      - name: Terraform Initialization
+        id: terraform-init
+        uses: ./reusable-workflows-path/actions
+        with:
+          working-directory: ${{ steps.concatenate.outputs.terraformdirectory }}
+          cli_token: ${{ secrets.TF_API_TOKEN }}
+        env:
+          #ARM_CLIENT_ID:       ${{ inputs.ARM_CLIENT_ID }}
+          ARM_CLIENT_ID:       ${{ secrets.ARM_CLIENT_ID }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+          ARM_TENANT_ID:       ${{ secrets.ARM_TENANT_ID }}
+          ARM_CLIENT_SECRET:  ${{ secrets.ARM_CLIENT_SECRET }}
+
+      - name: shell2
+        run:  |
+          env
+          ls -l
+          pwd
+
+      - name: Terraform fmt
+        id: fmt
+        run: terraform fmt -check
+        continue-on-error: true
+      
+      - name: Validate Terraform code
+        id: validate
+        shell: bash
+        run: terraform validate 
+        working-directory: ${{ steps.concatenate.outputs.terraformdirectory }}
+
+      - name : Print Title of PR
+        env:
+            TITLE: ${{ github.event.pull_request.title }}
+        run: |
+          echo The Title of your PR is $TITLE 
+          echo $plan_output
+
+      - name: Plan Terraform deployment
+        id: terraform-plan
+        run: |
+          terraform plan -detailed-exitcode -input=false -no-color | tee tfplan.out
+          #plan_output=$(terraform plan -detailed-exitcode -input=false -no-color)
+          #echo "plan_output" > tfplan.out
+          # if [[ ${{ inputs.terraform-cloud }} == false ]]; then
+          #   if [[ ${{ github.event_name }} == 'workflow_dispatch' && ${{ github.event.inputs.destroy || 'false' }} == 'true' ]];  
+          #   then 
+          #     echo "Executing terraform plan --destroy " 
+          #     terraform plan --destroy -detailed-exitcode -input=false -out=tfplan
+          #   else 
+          #     echo "Executing terraform plan" 
+          #     terraform plan -detailed-exitcode -input=false -no-color -out=tfplan
+          #   fi 
+          # else
+          #   echo "Executing terraform plan cloud"
+          #   terraform plan -detailed-exitcode -input=false -no-color | tee tfplan.out
+          # fi
+        working-directory:       ${{ steps.concatenate.outputs.terraformdirectory }}
+        env:
+          ARM_CLIENT_ID:       ${{ inputs.AZURE_CLIENT_ID  }}
+          ARM_SUBSCRIPTION_ID: ${{ inputs.AZURE_SUBSCRIPTION_ID }}
+          ARM_TENANT_ID:       ${{ inputs.AZURE_TENANT_ID }}
+          ARM_USE_OIDC:        ${{ inputs.ARM_USE_OIDC }}
+          ARM_CLIENT_SECRET:   ${{ secrets.AZURE_SECRET_ID }}
+
+      - name: Plan Output
+        id: plan
+        shell: bash
+        run: |
+          echo "planExitCode=${{ steps.terraform-plan.outputs.exitcode }}" >> $GITHUB_OUTPUT
+
+      - name: Save Artifact
+        id: save-artifact
+        #if: github.ref == 'refs/heads/main'
+        if: ${{! inputs.terraform-cloud }}
+        uses: actions/upload-artifact@v3
+        with:
+          name: tf-plan
+          path: ${{ steps.concatenate.outputs.terraformdirectory }}/tfplan          
+
+      - uses: actions/github-script@v7.0.1
+        # env:
+        #   PLAN: "terraform\n${{ steps.terraform-plan.outputs.stdout }}"
+        with:
+          github-token: ${{ secrets.REPO_SCOPED_TOKEN }}
+          script: |
+            let number = null ;
+            if (context.eventName === 'pull_request') {
+              number = context.payload.pull_request.number;
+            } else if (context.eventName === 'push') {
+              const commitSHA = context.sha;
+              const { data: listPullRequestsAssociatedWithCommit } = await github.rest.repos.listPullRequestsAssociatedWithCommit({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                commit_sha: commitSHA,
+              });
+              if (listPullRequestsAssociatedWithCommit.length === 0) {
+                console.log("The list is empty. No number available");
+                } else {
+                number = listPullRequestsAssociatedWithCommit[0].number;
+            }
+            }
+            
+            if (number){
+            // 1. Retrieve existing bot comments for the PR
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: number,
+            });
+            // 2. Prepare format of the comment
+            const { execSync } = require('child_process');
+            const fs = require('fs');
+            const plan_file = fs.readFileSync('${{ steps.concatenate.outputs.terraformdirectory }}/tfplan.out', 'utf8')
+            const name = plan_file.toString().substring(0 - 66000)
+            const chunkSize = 65000;
+            const chunks = [];
+            for (let i = 0; i < plan_file.length; i += chunkSize) {
+              chunks.push(plan_file.substring(i, i + chunkSize));
+            }
+            const myout = `
+            ${chunks[0]}
+            ${chunks[1]}
+            ${chunks[2]}
+            ${chunks[3]}
+            ${chunks[4]}
+            `;
+            const output = `#### Terraform Plan 📖\`${{ steps.terraform-plan.outcome }}\`
+      
+            <details><summary>Show Plan</summary>
+      
+            \`\`\`\n
+            ${chunks[0]}
+            ${chunks[1]}
+            ${chunks[2]}
+            ${chunks[3]}
+            \`\`\`
+      
+            </details>
+      
+            *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`, Working Directory: \`${{ steps.concatenate.outputs.terraformdirectory  }}\`, Workflow: \`${{ github.workflow }}\`*`;
+            const totalCharacters = plan_file.length;
+            console.log(`Total number of TF plan characters: ${totalCharacters}`);
+            const totalLines = plan_file.split('\n').length;
+            console.log(`Total number of TF plan lines: ${totalLines}`);
+            const totaloutchar = output.length;
+            console.log(`Total number of output characters: ${totaloutchar}`);
+            const totaloutLines = output.split('\n').length;
+            console.log(`Total number of output lines: ${totaloutLines}`);        
+            console.log(`Total number of myout characters: ${myout.length}`);
+            console.log(`Total number of myout lines: ${myout.split('\n').length}`);
+            // 3. If we have a comment, update it, otherwise create a new one
+            const myout2 = ["comment1", "comment2", "comment3"]; 
+            for (const comment of chunks) {
+              const commentBody = `#### Terraform Format and Style 🖌\`${{ steps.fmt.outcome }}\`
+              #### Terraform Initialization ⚙️\`${{ steps.terraform-init.outputs.init-status }}\`
+              #### Check Terraform state file 🔎:  \`${{ steps.terraform-init.outputs.state-check }}\`
+              #### Terraform Validation 🤖\`$${{ steps.validate.outcome }}\`
+              <details><summary>Show Plan</summary>
+
+              \`\`\`\n
+              ${comment}
+              \`\`\`
+
+              </details>
+
+              *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`, Working Directory: \`${{ steps.concatenate.outputs.terraformdirectory  }}\`, Workflow: \`${{ github.workflow }}\`*`;
+              await github.rest.issues.createComment({
+                issue_number: number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: commentBody
+              });
+            }
+
+            } else {
+              console.log('No Issue or Pull Request associated with this event.');
+            }
+
+      
+
+#       const fs = require('fs')
+# const plan_file = fs.readFileSync('file.out', 'utf8')
+# const plan = plan_file.length > 65000 ? plan_file.toString().substring(0, 65000) + " ..." : plan_file
+# const truncated_message = plan_file.length > 65000 ? plan_file.length > 65000 ? "Output is too long and was truncated. You can read full Plan in " + "hello" + "<br /><br />" : ""
+# const output = `#### Terraform Format and Style 🖌\`${{ steps.fmt.outcome }}\`
+# #### Terraform Initialization ⚙️\`${{ steps.init.outcome }}\`
+# #### Terraform Validation 🤖\`${{ steps.validate.outcome }}\`
+# <details><summary>Validation Output</summary>
+
+
+# const plan = plan_file.length > 65000 ? plan_file.toString().substring(plan_file.length - 65000) + " ..." : plan_file
+
+
+# const plan = plan_file.length > 65000 ? plan_file.toString().substring(0, 65000) + " ..." : plan_file
+# const plan1 = plan_file.length > 130000 ? plan_file.toString().substring(65000, 130000) + " ..." : plan
+# ${plan}
+# ${plan1}
+
+
+# - uses: actions/github-script@v6
+#         env:
+#             PLAN: "terraform\n${{ steps.terraform-plan.outputs.stdout }}"
+#         with:
+#           github-token: ${{ secrets.REPO_SCOPED_TOKEN }}
+#           script: |
+#             // 1. Retrieve existing bot comments for the PR
+#             const { data: comments } = await github.rest.issues.listComments({
+#               owner: context.repo.owner,
+#               repo: context.repo.repo,
+#               issue_number: context.issue.number,
+#             })
+#             const botComment = comments.find(comment => {
+#               return comment.user.type === 'Bot' && comment.body.includes('Terraform Format and Style')
+#             })
+            
+#             const { execSync } = require('child_process');
+#             const fs = require('fs');
+#             // Get current working directory
+#             const currentDirectory = execSync('pwd', { encoding: 'utf8' }).trim();
+#             console.log('Current Directory:', currentDirectory);
+
+#             // List files in the current directory
+#             const fileList = execSync('ls', { encoding: 'utf8' });
+#             console.log('Files in the current directory:', fileList);
+            
+#             // 2. Prepare format of the comment
+#             const plan_file = fs.readFileSync('${{ steps.concatenate.outputs.terraformdirectory }}/file.out', 'utf8')
+#             const plan = plan_file.length > 65000 ? plan_file.toString().substring(0, 65000) + " ..." : plan_file
+#             const plan1 = plan_file.length > 130000 ? plan_file.toString().substring(65000, 130000) + " ..." : plan
+#             const output = `#### Terraform Format and Style 🖌\`${{ steps.fmt.outcome }}\`
+#             #### Terraform Initialization ⚙️\`${{ steps.terraform-init.outputs.init-status }}\`
+#             #### Check Terraform state file 🔎:  \`${{ steps.terraform-init.outputs.state-check }}\`
+#             #### Terraform Validation 🤖\`$${{ steps.validate.outcome }}\`
+#             <details><summary>Show Plan</summary>
+      
+#             \`\`\`\n
+#             ${process.env.PLAN}
+#             \`\`\`
+      
+#             </details>
+
+#             *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`, Working Directory: \`${{ steps.concatenate.outputs.terraformdirectory  }}\`, Workflow: \`${{ github.workflow }}\`*`;
+
+#             // 3. If we have a comment, update it, otherwise create a new one
+#             if (botComment) {
+#               github.rest.issues.updateComment({
+#                 owner: context.repo.owner,
+#                 repo: context.repo.repo,
+#                 comment_id: botComment.id,
+#                 body: output
+#               })
+#             } else {
+#               github.rest.issues.createComment({
+#                 issue_number: context.issue.number,
+#                 owner: context.repo.owner,
+#                 repo: context.repo.repo,
+#                 body: output
+#               })
+#             }
+
