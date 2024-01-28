@@ -259,8 +259,7 @@ jobs:
               });
             }
             // Post comment
-            const postoutput = `#### Terraform Format and Style 🖌\`${{ steps.fmt.outcome }}\`
-            *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`, Working Directory: \`${{ steps.concatenate.outputs.terraformdirectory  }}\`, Workflow: \`${{ github.workflow }}\`*`;
+            const postoutput = `*Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`, Working Directory: \`${{ steps.concatenate.outputs.terraformdirectory  }}\`, Workflow: \`${{ github.workflow }}\`*`;
             await github.rest.issues.createComment({
                 issue_number: number,
                 owner: context.repo.owner,
