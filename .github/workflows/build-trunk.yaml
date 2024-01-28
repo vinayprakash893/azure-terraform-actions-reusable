@@ -229,14 +229,8 @@ jobs:
             for (let i = 0; i < plan_file.length; i += chunkSize) {
               chunks.push(plan_file.substring(i, i + chunkSize));
             }
-            const totalCharacters = plan_file.length;
-            console.log(`Total number of TF plan characters: ${totalCharacters}`);
-            const totalLines = plan_file.split('\n').length;
-            console.log(`Total number of TF plan lines: ${totalLines}`);
-            const totaloutchar = output.length;
-            console.log(`Total number of output characters: ${totaloutchar}`);
-            const totaloutLines = output.split('\n').length;
-            console.log(`Total number of output lines: ${totaloutLines}`);        
+            console.log(`Total number of TF plan characters: ${plan_file.length}`);
+            console.log(`Total number of TF plan lines: ${plan_file.split('\n').length}`);
             console.log(`Total number of myout characters: ${myout.length}`);
             console.log(`Total number of myout lines: ${myout.split('\n').length}`);
             // 3. If we have a comment, update it, otherwise create a new one
