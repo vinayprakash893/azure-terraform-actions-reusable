@@ -231,8 +231,6 @@ jobs:
             }
             console.log(`Total number of TF plan characters: ${plan_file.length}`);
             console.log(`Total number of TF plan lines: ${plan_file.split('\n').length}`);
-            console.log(`Total number of myout characters: ${myout.length}`);
-            console.log(`Total number of myout lines: ${myout.split('\n').length}`);
             // 3. If we have a comment, update it, otherwise create a new one
             await github.rest.issues.createComment({
                 issue_number: number,
