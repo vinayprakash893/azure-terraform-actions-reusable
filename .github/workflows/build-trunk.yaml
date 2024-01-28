@@ -220,6 +220,13 @@ jobs:
             #### Terraform Initialization ⚙️\`${{ steps.terraform-init.outputs.init-status }}\`
             #### Check Terraform state file 🔎:  \`${{ steps.terraform-init.outputs.state-check }}\`
             #### Terraform Validation 🤖\`$${{ steps.validate.outcome }}\``;
+            await github.rest.issues.createComment({
+                issue_number: number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: preoutput
+              });
+            // Data block
             const { execSync } = require('child_process');
             const fs = require('fs');
             const plan_file = fs.readFileSync('${{ steps.concatenate.outputs.terraformdirectory }}/tfplan.out', 'utf8')
@@ -232,17 +239,9 @@ jobs:
             console.log(`Total number of TF plan characters: ${plan_file.length}`);
             console.log(`Total number of TF plan lines: ${plan_file.split('\n').length}`);
             // 3. If we have a comment, update it, otherwise create a new one
-            await github.rest.issues.createComment({
-                issue_number: number,
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                body: preoutput
-              });
+            
             for (const comment of chunks) {
-              const commentBody = `#### Terraform Format and Style 🖌\`${{ steps.fmt.outcome }}\`
-              #### Terraform Initialization ⚙️\`${{ steps.terraform-init.outputs.init-status }}\`
-              #### Check Terraform state file 🔎:  \`${{ steps.terraform-init.outputs.state-check }}\`
-              #### Terraform Validation 🤖\`$${{ steps.validate.outcome }}\`
+              const commentBody = `
               <details><summary>Show Plan</summary>
 
               \`\`\`\n
@@ -251,7 +250,7 @@ jobs:
 
               </details>
 
-              *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`, Working Directory: \`${{ steps.concatenate.outputs.terraformdirectory  }}\`, Workflow: \`${{ github.workflow }}\`*`;
+              `;
               await github.rest.issues.createComment({
                 issue_number: number,
                 owner: context.repo.owner,
@@ -259,6 +258,7 @@ jobs:
                 body: commentBody
               });
             }
+            // Post comment
             const postoutput = `#### Terraform Format and Style 🖌\`${{ steps.fmt.outcome }}\`
             *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`, Working Directory: \`${{ steps.concatenate.outputs.terraformdirectory  }}\`, Workflow: \`${{ github.workflow }}\`*`;
             await github.rest.issues.createComment({
