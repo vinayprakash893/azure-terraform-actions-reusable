@@ -229,15 +229,16 @@ jobs:
             // Data block
             const { execSync } = require('child_process');
             const fs = require('fs');
-            const plan_file = fs.readFileSync('${{ steps.concatenate.outputs.terraformdirectory }}/tfplan.out', 'utf8')
+            const plan_file = fs.readFileSync('${{ steps.concatenate.outputs.terraformdirectory }}/tfplan.out', 'utf8');
+            console.log(`Total number of TF plan characters: ${plan_file.length}`);
+            console.log(`Total number of TF plan lines: ${plan_file.split('\n').length}`);
             const name = plan_file.toString().substring(0 - 66000)
             const chunkSize = 65000;
             const chunks = [];
             for (let i = 0; i < plan_file.length; i += chunkSize) {
               chunks.push(plan_file.substring(i, i + chunkSize));
             }
-            console.log(`Total number of TF plan characters: ${plan_file.length}`);
-            console.log(`Total number of TF plan lines: ${plan_file.split('\n').length}`);
+            
             // 3. If we have a comment, update it, otherwise create a new one
             
             for (const comment of chunks) {
