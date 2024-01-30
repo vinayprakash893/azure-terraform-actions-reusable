@@ -219,7 +219,8 @@ jobs:
             const preoutput = `#### Terraform Format and Style 🖌\`${{ steps.fmt.outcome }}\`
             #### Terraform Initialization ⚙️\`${{ steps.terraform-init.outputs.init-status }}\`
             #### Check Terraform state file 🔎:  \`${{ steps.terraform-init.outputs.state-check }}\`
-            #### Terraform Validation 🤖\`$${{ steps.validate.outcome }}\``;
+            #### Terraform Validation 🤖\`$${{ steps.validate.outcome }}\`
+            *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`, Working Directory: \`${{ steps.concatenate.outputs.terraformdirectory  }}\`, Workflow: \`${{ github.workflow }}\`*`;
             await github.rest.issues.createComment({
                 issue_number: number,
                 owner: context.repo.owner,
@@ -238,12 +239,12 @@ jobs:
             for (let i = 0; i < plan_file.length; i += chunkSize) {
               chunks.push(plan_file.substring(i, i + chunkSize));
             }
-            
+            console.log("Number of chunks created:", chunks.length);
             // 3. If we have a comment, update it, otherwise create a new one
-            
+            let entry = 1
             for (const comment of chunks) {
               const commentBody = `
-              <details><summary>Show Plan</summary>
+              <details><summary>Show Plan${entry}</summary>
 
               \`\`\`\n
               ${comment}
@@ -258,15 +259,9 @@ jobs:
                 repo: context.repo.repo,
                 body: commentBody
               });
+              entry = entry + 1;
             }
-            // Post comment
-            const postoutput = `*Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`, Working Directory: \`${{ steps.concatenate.outputs.terraformdirectory  }}\`, Workflow: \`${{ github.workflow }}\`*`;
-            await github.rest.issues.createComment({
-                issue_number: number,
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                body: postoutput
-              });
+            
             } else {
               console.log('No Issue or Pull Request associated with this event.');
             }
