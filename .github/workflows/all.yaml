@@ -1,0 +1,44 @@
+name: all-workflow
+on:
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
+      terraform_directory:
+        required: true
+        type: string
+      artifact-name:
+        required: true
+        type: string
+      plan-changes:
+        required: false
+        type: string
+    
+    secrets:
+      ARM_CLIENT_ID :
+        required: true
+      ARM_SUBSCRIPTION_ID:
+        required: true
+      ARM_TENANT_ID:
+        required: true
+      token:
+        required: true
+
+jobs:
+  build:
+    uses: vinayprakash893/azure-terraform-actions-reusable/.github/workflows/build.yaml@main
+    with:
+      environment: dev
+      terraform_directory: ""
+      artifact-name: ${{ inputs.artifact-name }}
+    secrets: inherit
+
+  plancall:
+    needs: [build]
+    uses: vinayprakash893/azure-terraform-actions-reusable/.github/workflows/plan.yaml@main
+    with:
+      environment: dev
+      terraform_directory: ""
+      artifact-name: art-vny-1
+    secrets: inherit
