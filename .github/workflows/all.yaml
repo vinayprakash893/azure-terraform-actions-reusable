@@ -30,7 +30,7 @@ jobs:
     uses: vinayprakash893/azure-terraform-actions-reusable/.github/workflows/build.yaml@main
     with:
       environment: dev
-      terraform_directory: ""
+      terraform_directory: ${{ inputs.terraform_directory }}
       artifact-name: ${{ inputs.artifact-name }}
     secrets: inherit
 
