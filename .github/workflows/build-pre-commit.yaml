@@ -61,6 +61,8 @@ jobs:
           pre-commit run --all-files --color=always | tee githuboutput
           echo "::set-output name=pre-commit-output::$(cat githuboutput)"
           # echo "init-status=${{ steps.pre-commit-run.outputs.pre-commit-output }}" >> $GITHUB_OUTPUT
+          echo "hevvvvv"
+          echo ${{ steps.pre-commit-run.outputs.pre-commit-output }}
 
   terraform-validate:
     runs-on: ubuntu-latest
