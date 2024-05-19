@@ -105,10 +105,22 @@ jobs:
       #     env
       #     ls -l
       #     pwd
+      - name: Check-pre-commit-file
+        id: check-pre-commit
+        run: |
+          if [ -f ".pre-commit-config.yaml" ]; then
+              echo "File '.pre-commit-config.yaml' exists."
+              echo "pre_commit=yes" >> $GITHUB_ENV
+          else
+              echo "File '.pre-commit-config.yaml' does not exist."
+              echo "pre_commit=no" >> $GITHUB_ENV
+          fi
+          exit 0
 
       - uses: actions/setup-python@v3
       - uses: pre-commit/action@v3.0.1
-        id: validate
+        if: env.pre_commit == 'yes'
+        id: prevalidate
         with:
           working-directory: ${{ steps.concatenate.outputs.terraformdirectory }}
           extra_args: '--all-files 2>&1 | tee precommit_output.txt'
@@ -123,16 +135,19 @@ jobs:
           file_content=$(< precommit_output.txt)
           # echo "$file_content"
           echo "file_content=$file_content" >> $GITHUB_OUTPUT
-      # - name: Terraform fmt
-      #   id: fmt
-      #   run: terraform fmt -check
-      #   continue-on-error: true
+
+      - name: Terraform fmt
+        if: env.pre_commit == 'no'
+        id: fmt
+        run: terraform fmt -check
+        continue-on-error: true
       
-      # - name: Validate Terraform code
-      #   id: validate
-      #   shell: bash
-      #   run: terraform validate 
-      #   working-directory: ${{ steps.concatenate.outputs.terraformdirectory }}
+      - name: Validate Terraform code
+        if: env.pre_commit == 'no'
+        id: validate
+        shell: bash
+        run: terraform validate 
+        working-directory: ${{ steps.concatenate.outputs.terraformdirectory }}
 
       - name: Terraform Initialization
         id: terraform-init
