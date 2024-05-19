@@ -118,7 +118,7 @@ jobs:
         id: capture_file
         run: |
           # echo "The pre-commit output was:"
-          # cat precommit_output.txt
+          cat precommit_output.txt
           #file_content=$(cat precommit_output.txt)
           file_content=$(< precommit_output.txt)
           # echo "$file_content"
