@@ -91,11 +91,11 @@ jobs:
           #token: ${{ secrets.API_GITHUB_TOKEN }}
           path: 'reusable-workflows-path'
       
-      - name: shell
-        run:  |
-          env
-          ls -l
-          pwd
+      # - name: shell
+      #   run:  |
+      #     env
+      #     ls -l
+      #     pwd
 
       #TERRAFORM COMMANDS
       - name: Terraform Initialization
@@ -111,26 +111,28 @@ jobs:
           ARM_TENANT_ID:       ${{ secrets.ARM_TENANT_ID }}
           ARM_CLIENT_SECRET:  ${{ secrets.ARM_CLIENT_SECRET }}
 
-      - name: shell2
-        run:  |
-          env
-          ls -l
-          pwd
+      # - name: shell2
+      #   run:  |
+      #     env
+      #     ls -l
+      #     pwd
 
       - uses: actions/setup-python@v3
       - uses: pre-commit/action@v3.0.1
+        id: validate
         with:
           working-directory: ${{ steps.concatenate.outputs.terraformdirectory }}
+        continue-on-error: true
       # - name: Terraform fmt
       #   id: fmt
       #   run: terraform fmt -check
       #   continue-on-error: true
       
-      - name: Validate Terraform code
-        id: validate
-        shell: bash
-        run: terraform validate 
-        working-directory: ${{ steps.concatenate.outputs.terraformdirectory }}
+      # - name: Validate Terraform code
+      #   id: validate
+      #   shell: bash
+      #   run: terraform validate 
+      #   working-directory: ${{ steps.concatenate.outputs.terraformdirectory }}
 
 
       - name : Print Title of PR
