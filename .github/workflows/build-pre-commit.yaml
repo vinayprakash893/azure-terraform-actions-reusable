@@ -122,7 +122,13 @@ jobs:
         id: validate
         with:
           working-directory: ${{ steps.concatenate.outputs.terraformdirectory }}
+          extra_args: '--all-files 2>&1 | tee precommit_output.txt'
         continue-on-error: true
+
+      - name: Print captured output
+        run: |
+          echo "The pre-commit output was:"
+          cat precommit_output.txt
       # - name: Terraform fmt
       #   id: fmt
       #   run: terraform fmt -check
