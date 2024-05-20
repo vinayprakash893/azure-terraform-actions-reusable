@@ -129,12 +129,13 @@ jobs:
       - name: Print captured output
         id: capture_file
         run: |
-          # echo "The pre-commit output was:"
-          cat precommit_output.txt
-          #file_content=$(cat precommit_output.txt)
-          file_content=$(< precommit_output.txt)
-          # echo "$file_content"
-          echo "file_content=$file_content" >> $GITHUB_OUTPUT
+          echo "${{ steps.prevalidate.outputs.pre_commit_output }}"
+          # # echo "The pre-commit output was:"
+          # cat precommit_output.txt
+          # #file_content=$(cat precommit_output.txt)
+          # file_content=$(< precommit_output.txt)
+          # # echo "$file_content"
+          # echo "file_content=$file_content" >> $GITHUB_OUTPUT
 
       - name: Terraform fmt
         if: env.pre_commit == 'no'
