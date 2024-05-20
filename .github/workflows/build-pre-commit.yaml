@@ -118,7 +118,7 @@ jobs:
           exit 0
 
       - uses: actions/setup-python@v3
-      - uses: pre-commit/action@v3.0.1
+      - uses: vinayprakash893/azure-terraform-actions-reusable/precommit-action@main
         if: env.pre_commit == 'yes'
         id: prevalidate
         with:
