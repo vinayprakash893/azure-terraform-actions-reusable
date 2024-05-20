@@ -129,7 +129,7 @@ jobs:
       - name: Print captured output
         id: capture_file
         run: |
-          echo "${{ steps.prevalidate.outputs.pre_commit_output }}"
+          echo "${{ steps.prevalidate.outputs.pre_commit_output }}" | base64 --decode
           # # echo "The pre-commit output was:"
           # cat precommit_output.txt
           # #file_content=$(cat precommit_output.txt)

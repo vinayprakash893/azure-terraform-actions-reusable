@@ -8,7 +8,7 @@ inputs:
 outputs:
   pre_commit_output:
     description: The output of the pre-commit run
-    value: ${{ steps.run_pre_commit.outputs.init-status }}
+    value: ${{ steps.run_pre_commit.outputs.pre_commit_output }}
 runs:
   using: composite
   steps:
@@ -23,7 +23,8 @@ runs:
   - id: run_pre_commit
     run: |
       output=$(pre-commit run --show-diff-on-failure --color=always ${{ inputs.extra_args }})
-      echo "init-status=${output}" >> $GITHUB_OUTPUT
+      encoded_output=$(echo "${output}" | base64)
+      echo "pre_commit_output=${encoded_output}" >> $GITHUB_OUTPUT
     shell: bash
 
 
