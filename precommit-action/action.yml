@@ -22,9 +22,10 @@ runs:
       key: pre-commit-3|${{ env.pythonLocation }}|${{ hashFiles('.pre-commit-config.yaml') }}
   - id: run_pre_commit
     run: |
-      output=$(pre-commit run --show-diff-on-failure --color=always ${{ inputs.extra_args }})
-      encoded_output=$(echo "${output}" | base64)
-      echo "pre_commit_output=${encoded_output}" >> $GITHUB_OUTPUT
+      output=$(pre-commit run --show-diff-on-failure --color=always ${{ inputs.extra_args }} | tee /dev/tty)
+      echo "pre_commit_output<<EOF" >> $GITHUB_OUTPUT
+      echo "${output}" >> $GITHUB_OUTPUT
+      echo "EOF" >> $GITHUB_OUTPUT
     shell: bash
 
 
