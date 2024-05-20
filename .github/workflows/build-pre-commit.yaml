@@ -191,7 +191,7 @@ jobs:
             <details><summary>Validation Output</summary>
 
             \`\`\`\n
-            ${{ steps.capture_file.outputs.file_content }}
+            ${{ steps.prevalidate.outputs.pre_commit_output }}
             \`\`\`
 
             </details>
