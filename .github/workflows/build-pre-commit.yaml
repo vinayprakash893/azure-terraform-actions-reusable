@@ -123,7 +123,7 @@ jobs:
         id: prevalidate
         with:
           working-directory: ${{ steps.concatenate.outputs.terraformdirectory }}
-          extra_args: '--files ${{ steps.concatenate.outputs.terraformdirectory }}/* 2>&1 | tee precommit_output.txt'
+          extra_args: '--files ${{ steps.concatenate.outputs.terraformdirectory }}/*'
         continue-on-error: true
 
       - name: Print captured output
