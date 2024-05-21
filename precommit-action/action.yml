@@ -22,12 +22,23 @@ runs:
       key: pre-commit-3|${{ env.pythonLocation }}|${{ hashFiles('.pre-commit-config.yaml') }}
   - id: run_pre_commit
     run: |
-      output=$(pre-commit run --show-diff-on-failure --color=always ${{ inputs.extra_args }} 2>&1)
-      echo "pre_commit_output<<EOF" >> $GITHUB_OUTPUT
-      echo "${output}" >> $GITHUB_OUTPUT
-      echo "EOF" >> $GITHUB_OUTPUT
-      pre-commit run --show-diff-on-failure --color=always ${{ inputs.extra_args }}
+        set +e
+        output=$(pre-commit run --show-diff-on-failure --color=always ${{ inputs.extra_args }} 2>&1)
+        exit_code=$?
+        set -e
+        echo "${output}"
+        echo "pre_commit_output<<EOF" >> $GITHUB_OUTPUT
+        echo "${output}" >> $GITHUB_OUTPUT
+        echo "EOF" >> $GITHUB_OUTPUT
+        exit $exit_code
     shell: bash
+    # run: |
+    #   output=$(pre-commit run --show-diff-on-failure --color=always ${{ inputs.extra_args }} 2>&1)
+    #   echo "pre_commit_output<<EOF" >> $GITHUB_OUTPUT
+    #   echo "${output}" >> $GITHUB_OUTPUT
+    #   echo "EOF" >> $GITHUB_OUTPUT
+    #   pre-commit run --show-diff-on-failure --color=always ${{ inputs.extra_args }}
+    # shell: bash
 
 
 
