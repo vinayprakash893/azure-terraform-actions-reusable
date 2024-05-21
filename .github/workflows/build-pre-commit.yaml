@@ -290,7 +290,9 @@ jobs:
 
             // 2. Prepare format of the comment
             const output = `#### Terraform Format and Style 🖌\`${{ steps.fmt.outcome }}\`
-            #### Terraform Validation 🤖\`FAILED`
+            #### Terraform Initialization ⚙️\`${{ steps.terraform-init.outputs.init-status }}\`
+            #### Check Terraform state file 🔎:  \`${{ steps.terraform-init.outputs.state-check }}\`
+            #### Terraform Validation 🤖\`$${{ steps.validate.outcome }}\`
             <details><summary>Validation Output</summary>
 
             \`\`\`\n
