@@ -289,8 +289,7 @@ jobs:
             });
 
             // 2. Prepare format of the comment
-            const output = `#### Terraform Validation 🤖\`$${{ steps.validate.outcome }}\`
-            #### Terraform Validation 🤖\`$${{ steps.validate.outcome }}\`
+            const output = `#### Terraform Validation FAILED
             <details><summary>Validation Output</summary>
 
             \`\`\`\n
