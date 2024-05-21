@@ -124,7 +124,7 @@ jobs:
         with:
           working-directory: ${{ steps.concatenate.outputs.terraformdirectory }}
           extra_args: '--files ${{ steps.concatenate.outputs.terraformdirectory }}/*'
-        #continue-on-error: true
+        continue-on-error: true
 
       - name: Print captured output
         id: capture_file
