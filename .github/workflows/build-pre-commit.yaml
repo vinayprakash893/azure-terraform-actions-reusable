@@ -118,11 +118,12 @@ jobs:
           exit 0
 
       - uses: actions/setup-python@v3
-      - uses: vinayprakash893/azure-terraform-actions-reusable/precommit-action@main
+      - name: precommit
         if: env.pre_commit == 'yes'
         id: prevalidate
+        uses: vinayprakash893/azure-terraform-actions-reusable/precommit-action@main
         with:
-          working-directory: ${{ steps.concatenate.outputs.terraformdirectory }}
+          #working-directory: ${{ steps.concatenate.outputs.terraformdirectory }}
           extra_args: '--files ${{ steps.concatenate.outputs.terraformdirectory }}/*'
         #continue-on-error: true
 
