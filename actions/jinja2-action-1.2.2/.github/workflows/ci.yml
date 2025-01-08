@@ -1,0 +1,108 @@
+name: Continuous integration
+
+on: [pull_request]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout VCS
+        uses: actions/checkout@v1
+
+      - name: 'Unit tests'
+        run: |
+          docker build --tag tests .
+          docker run --entrypoint python tests unit-tests.py
+
+      - name: '[run] simple'
+        uses: ./
+        with:
+          template: test/simple/template
+          output_file: test/simple/result
+          variables: foo=bar
+      - name: '[test] simple'
+        run: diff test/simple/result test/simple/expected
+
+      - name: '[run] many variables'
+        uses: ./
+        with:
+          template: test/many-variables/template
+          output_file: test/many-variables/result
+          variables: |
+            foo=bar
+            baz=cux
+      - name: '[test] many variables'
+        run: diff test/many-variables/result test/many-variables/expected
+
+      - name: '[run] many variables declared with messy whitespace'
+        uses: ./
+        with:
+          template: test/many-variables/template
+          output_file: test/many-variables/result
+          variables: |
+            foo=bar                             
+                baz=cux                  
+                
+                
+                    
+      - name: '[test] many variables declared with messy whitespace'
+        run: diff test/many-variables/result test/many-variables/expected
+
+      - name: '[run] many variables with messy whitespace'
+        uses: ./
+        with:
+          template: test/whitespace/template
+          output_file: test/whitespace/result
+          variables: |
+            foo=this variable has whitespace but it only takes one line
+            bar= \nthis\nvariable\nhas\nmany\n    \nlines\n    and trailing whitespace    
+      - name: '[test] many variables with messy whitespace'
+        run: diff test/whitespace/result test/whitespace/expected
+
+      - name: '[run] yaml data file'
+        uses: ./
+        with:
+          template: test/many-variables/template
+          output_file: test/data-files/yaml-result
+          data_file: test/data-files/data.yml
+      - name: '[test] yaml data file'
+        run: diff test/data-files/yaml-result test/many-variables/expected
+
+      - name: '[run] ini data file'
+        uses: ./
+        with:
+          template: test/many-variables/template
+          output_file: test/data-files/ini-result
+          data_file: test/data-files/data.yml
+      - name: '[test] ini data file'
+        run: diff test/data-files/ini-result test/many-variables/expected
+
+      - name: '[run] json data file'
+        uses: ./
+        with:
+          template: test/many-variables/template
+          output_file: test/data-files/json-result
+          data_file: test/data-files/data.yml
+      - name: '[test] json data file'
+        run: diff test/data-files/json-result test/many-variables/expected
+
+      - name: '[run] env data file'
+        uses: ./
+        with:
+          template: test/many-variables/template
+          output_file: test/data-files/env-result
+          data_file: test/data-files/data.yml
+      - name: '[test] env data file'
+        run: diff test/data-files/env-result test/many-variables/expected
+
+      - name: '[run] env variables'
+        uses: ./
+        with:
+          template: test/env-variables/template
+          output_file: test/env-variables/result
+        env:
+          FOO: bar
+      - name: '[test] env variables'
+        run: diff test/env-variables/result test/env-variables/expected
