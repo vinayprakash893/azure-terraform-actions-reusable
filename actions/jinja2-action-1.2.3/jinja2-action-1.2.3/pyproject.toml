@@ -27,4 +27,4 @@ Jinja2 = "^2.11.2"
 pytest = "^7.0"
 
 [tool.poetry.packages]
-include = ["jinja2_action"]
+include = ["."]
