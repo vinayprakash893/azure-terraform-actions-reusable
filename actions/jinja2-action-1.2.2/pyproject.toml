@@ -11,8 +11,6 @@ authors = [
 
 readme = 'README.md'
 
-repository = "https://github.com/cuchi/jinja2-action"
-homepage = "https://github.com/cuchi/jinja2-action"
 
 keywords = ['jinja2']
 
